@@ -7,6 +7,7 @@ const HostsAdmin = () => import('../views/hosts/hostsAdmin.vue')
 const Files = () => import('../views/files/files.vue')
 const News = () => import('../views/news/newsCore.vue')
 const Info = () => import('../views/info/info.vue')
+const Enter = () => import('../views/enterprise/enterprise.vue')
 const Login = () => import('../views/login/login.vue')
 //解决路由重复报错问题
 const originalPush = VueRouter.prototype.push
@@ -18,9 +19,8 @@ Vue.use(VueRouter)
   const routes = [
     {
       path:'',
-      redirect:"/login"
-    }
-    ,
+      redirect:"login"
+    },
     {
       path: "/login",
       name: "Login",
@@ -30,7 +30,7 @@ Vue.use(VueRouter)
       }
     },
   {
-    path: '/',
+    path: '/Main',
     name: 'Main',
     component: Main,
     meta:{
@@ -38,7 +38,7 @@ Vue.use(VueRouter)
     },
     children:[
     {
-      path:"/Main/Users",
+      path:"Users",
       name:'Users',
       meta:{
         title:"用户管理"
@@ -49,7 +49,7 @@ Vue.use(VueRouter)
       }
     },
     {
-      path:"/Main/Hosts",
+      path:"Hosts",
       name:'Hosts',
       meta:{
         title:"客户端管理"
@@ -60,7 +60,7 @@ Vue.use(VueRouter)
       }
     },
     {
-      path:"/Main/HostsAdmin",
+      path:"HostsAdmin",
       name:'HostsAdmin',
       meta:{
         title:"客户端管理员"
@@ -71,7 +71,7 @@ Vue.use(VueRouter)
       }
     },
     {
-      path:"/Main/Files",
+      path:"Files",
       name:'Files',
       meta:{
         title:"文件管理"
@@ -82,7 +82,7 @@ Vue.use(VueRouter)
       }
     },
     {
-      path:"/Main/News",
+      path:"News",
       name:'News',
       meta:{
         title:"发布管理"
@@ -93,7 +93,7 @@ Vue.use(VueRouter)
       }
     },
     {
-      path:"/Main/Info",
+      path:"Info",
       name:'Info',
       meta:{
         title:"节目制作"
@@ -101,6 +101,17 @@ Vue.use(VueRouter)
       components:{
         default:Info,
         'mianView':Info
+      }
+    },
+    {
+      path:"Enter",
+      name:'Enter',
+      meta:{
+        title:"企业管理"
+      },
+      components:{
+        default:Enter,
+        'mianView':Enter
       }
     }
   
@@ -117,9 +128,10 @@ const router = new VueRouter({
 const whiteList = ['/login']
 router.beforeEach((to,from,next) => {
   //设置标题
-  document.title=to.matched[0].meta.title;
-  const islogin= localStorage.getItem("userId");
-  if (islogin!==null&&islogin!="") {
+ // document.title=to.matched[0].meta.title;无效
+  document.title=to.meta.title;
+  const token= localStorage.getItem("token");
+  if (token!==null&&token!="") {
     if (to.path === '/login') {
       next()
     }

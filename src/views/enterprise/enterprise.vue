@@ -2,24 +2,23 @@
     <el-container>
 
   <el-header>
-     <el-menu :default-active="userIndex" 
+     <el-menu :default-active="enterIndex" 
      class="el-menu-demo el-menu-host" mode="horizontal" @select="handleSelect">
-  <el-menu-item  index="0">正常用户</el-menu-item>
+  <el-menu-item  index="0">所有企业</el-menu-item>
   <el-menu-item  index="1">黑名单</el-menu-item >
   <el-menu-item  class="el-menu-hostInput">
     <div>
-      <el-input size="mini" placeholder="账号" v-model="selectName" >
+      <el-input size="mini" placeholder="企业名称" v-model="selectName" >
     </el-input><el-button type="primary" size="mini" @click="onSubmit">查询</el-button>
       </div>
     </el-menu-item>  
    <el-menu-item style="float:right">
-    <el-button type="primary" size="small"  @click="addUserShowDialog= true" >
-            添加用户
+    <el-button type="primary" size="small"  @click="addEnterShowDialog= true" >
+            添加企业
     </el-button>
     </el-menu-item>
   </el-menu>
   </el-header>
-
   <el-main>
 <el-table
     ref="multipleTable"
@@ -32,29 +31,19 @@
       type="selection"
       width="55">
     </el-table-column>
-   <el-table-column
-      prop="id"
-      label="id"
+    <el-table-column
+      prop="enterName"
+      label="企业名"
       >
     </el-table-column>
     <el-table-column
-      prop="userId"
-      label="用户id"
-      >
-    </el-table-column>
-    <el-table-column
-      prop="loginName"
-      label="登录名"
-      >
-    </el-table-column>
-    <el-table-column
-      prop="userName"
-      label="名称"
+      prop="hostNum"
+      label="主机数"
       >
     </el-table-column>
     <el-table-column
       prop="creationTime"
-      label="创建时间"
+      label="添加时间"
       >
     </el-table-column>
     <el-table-column
@@ -62,8 +51,8 @@
       >
       <template slot-scope="scope">
         <el-button @click="userClickUpdate(scope.row)" type="text" size="small">修改</el-button>
-        <el-button @click="userClickNo(scope.row)" type="text" size="small" v-if="showUserClick">拉黑</el-button>
-        <el-button @click="userClickOk(scope.row)" type="text" size="small" v-else>恢复</el-button>
+        <el-button @click="enterClickNo(scope.row)" type="text" size="small" v-if="showUserClick">拉黑</el-button>
+        <el-button @click="enterClickOk(scope.row)" type="text" size="small" v-else>恢复</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -80,8 +69,8 @@
   </div>
   
   </el-main>
-<!-- 添加用户框 -->
-<el-dialog title="添加用户" :visible.sync="addUserShowDialog">
+<!-- 添加企业框 -->
+<el-dialog title="添加企业" :visible.sync="addEnterShowDialog">
   <el-form :model="form">
     <el-form-item label="姓名" >
       <el-input v-model="form.userName" autocomplete="on"></el-input>
@@ -101,7 +90,7 @@
     <el-button type="primary" @click="saveUser">确 定</el-button>
   </div>
 </el-dialog>
-<!-- 修改用户 -->
+<!-- 修改企业 -->
 <el-dialog title="修改用户" :visible.sync="updateUserShowDialog">
   <el-form :model="formUp">
     <el-form-item label="账号">
@@ -127,11 +116,11 @@ export default {
       return {
         pageSize:10,
         pagetotal:0,
-        userIndex: "0",
+        enterIndex: "0",
         selectName:'',
         currentPage:1,
         showUserClick:true,
-        addUserShowDialog:false,
+        addEnterShowDialog:false,
         updateUserShowDialog:false,
         tableData: [
           
@@ -153,7 +142,7 @@ export default {
     },
     //页面加载
     created(){
-       this.selectUser();
+       this.selectEnter();
      // this.convert();
     },
     methods: {
@@ -179,7 +168,7 @@ export default {
        // alert(this.currentPage);
         this.$axios.post(this.GLOBAL.serverSrc+'/users/update',formData).then(res=> {
               if(res.data.code==0){
-                this.selectUser(); 
+                this.selectEnter(); 
               }
               alert(res.data.msg);
               this.updateUserShowDialog=false;
@@ -209,8 +198,8 @@ export default {
        // alert(this.currentPage);
         this.$axios.post(this.GLOBAL.serverSrc+'/users/add',formData).then(res=> {
               if(res.data.code==0){
-                this.selectUser();
-                this.addUserShowDialog=false;
+                this.selectEnter();
+                this.addEnterShowDialog=false;
                 alert(res.data.msg);
               }else{
               alert(res.data.msg);
@@ -220,73 +209,73 @@ export default {
              console.log(error);
            });
       },
-      //查询用户
-      selectUser(){
+      //查询企业
+      selectEnter(){
         let formData=new FormData();
         formData.append("page",this.currentPage-1);
-        formData.append("loginName",this.selectName);
-        //formData.append("page",this.currentPage);
-       // alert(this.currentPage);
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/select',formData).then(res=> {
+        formData.append("enterName",this.selectName);
+        formData.append("state",this.enterIndex);
+        const token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.get(this.GLOBAL.serverSrc+'/enter/enter',{ params:{
+          enterName: this.selectName,
+          state:this.enterIndex,
+          page:this.currentPage-1
+        }}).then(res=> {
               console.log(res);//数据先转换格式
               let data = JSON.parse(res.data.data);
-              this.pagetotal=data[0].size;//设置总数据大小
+              this.pagetotal=parseInt(data[0].size);//设置总数据大小
               this.tableData=JSON.parse(data[0].data);//表数据
-              
            }).catch(function (error) {
-
              console.log(error);
            });
       },
       handleCurrentChange(val) {
         console.log(val);
-        this.selectUser();
+        this.selectEnter();
       },
       //页头
       handleSelect(key, keyPath) {
         console.log(key+"");
         if(key!=null){
          this.currentPage=1;
-         this.userIndex=keyPath+"";
+         this.enterIndex=key;
          if(keyPath==0){
            this.showUserClick=true
          }else{
            this.showUserClick=false
          }
-         this.selectUser();
+         this.selectEnter();
         }      
       },
       //恢复
-      userClickOk(val){
-        let formData=new FormData();
-        formData.append("id",val.id);
-        formData.append("state","0");
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/update',formData).then(res=> {
+      enterClickOk(val){
+        this.$axios.delete(this.GLOBAL.serverSrc+'/enter/enter/'+val.enterId,{ params:{
+          state:"0"
+        }}).then(res=> {
           if(res.data.code=="0"){
-  this.selectUser();
-          }
-            
+              this.selectEnter();
+          } 
            }).catch(function (error) {
 
              console.log(error);
       });
       },
       //拉黑
-      userClickNo(val){
-        let formData=new FormData();
-        formData.append("id",val.id);
-        formData.append("state","1");
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/update',formData).then(res=> {
+      enterClickNo(val){
+       this.$axios.delete(this.GLOBAL.serverSrc+'/enter/enter/'+val.enterId,{ params:{
+          state:"1"
+        }}).then(res=> {
           if(res.data.code=="0"){
-        this.selectUser();
-          }
+              this.selectEnter();
+          } 
            }).catch(function (error) {
 
              console.log(error);
       });
       },
       onSubmit(){ 
-         this.selectUser();
+         this.selectEnter();
       }
     }
 }

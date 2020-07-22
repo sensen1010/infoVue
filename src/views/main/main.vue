@@ -2,11 +2,11 @@
   <el-container style="height: 1080px; border: 1px solid #eee">
     <el-menu default-active="1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"  @select="handleSelect">
      <img   style="width: 100px; height: 100px"/>
-      <el-menu-item index="1">
+      <el-menu-item index="1" v-if="userType=='0'">
         <i class="el-icon-user"></i>
         <span slot="title">企业管理</span>
       </el-menu-item>
-      <el-menu-item index="2">
+      <el-menu-item index="2" v-if="userType!='2'" >
         <i class="el-icon-user"></i>
         <span slot="title">用户管理</span>
       </el-menu-item>
@@ -35,8 +35,28 @@
 </template>
 <script>
   export default {
+      beforeCreate(){
+      },
+      data(){
+        return{
+            userType:'2'
+        }
+    },
       created(){
-         this.$router.push('/Main/Users');
+         const num= localStorage.getItem("userType");
+         this.userType=num;
+         if(num=="0"){
+            this.$router.push('/Main/Enter');
+         }
+         else if(num=="1"){
+            this.$router.push('/Main/Users');
+         }
+         else if(num=="2"){
+            this.$router.push('/Main/Files');
+         }
+         else{
+            this.$router.push('/Login');
+         }
       },
       methods: {
            handleOpen(key, keyPath) {
@@ -49,7 +69,7 @@
                 console.log(keyPath);
                    switch(key){
                      case '1':
-                       this.$router.push('/Main/Users');
+                       this.$router.push('/Main/Enter');
                        break;
                      case '2':
                        this.$router.push('/Main/Users');

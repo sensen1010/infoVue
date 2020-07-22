@@ -33,20 +33,33 @@ export default {
     },
     methods:{
         onLogin(){ 
+      //  let da="[{\"pow\":\"123456\",\"userName\":\"ykmOp6Jb\",\"type\":\"1\",\"userId\":\"d892d9c3a6824beba8aa242cd4d7861e\"}]";
+      //  let da2="{\"pow\":\"123456\",\"userName\":\"ykmOp6Jb\",\"type\":\"1\",\"userId\":\"d892d9c3a6824beba8aa242cd4d7861e\"}";
+      //  let zhuan=JSON.parse(da);
+      //  let zhuan2=JSON.parse(da2);
+      // console.log(zhuan.pow);
+      // console.log(zhuan2.pow);  
        let formData = new FormData();
-      formData.append("loginName", this.form.no);
+      formData.append("userName", this.form.no);
       formData.append("password", this.form.pow);
       this.$axios
-        .post(this.GLOBAL.serverSrc+"/admin/login", formData)
+        .post(this.GLOBAL.serverSrc+"/users/login", formData)
         .then(res => {
+          console.log(res);
           // console.log(JSON.parse(res.data));//数据先转换格式
           if (res.data.code == "0") {
-            alert(res.data.msg);
-            localStorage.setItem("userId",res.data.adminId);  
-             this.$router.push('/Main'); 
+           // alert(res.data.msg);
+            const redata=JSON.parse(res.data.data);
+            localStorage.setItem("token",res.data.token);  
+            localStorage.setItem("userType",redata.userType);  
+            localStorage.setItem("userId",redata.userId); 
+            localStorage.setItem("enterId",redata.enterId);
+            this.$router.push('/Main'); 
           } else {
-            alert(res.data.msg);
-            localStorage.setItem("userId","");
+            localStorage.setItem("token","");  
+            localStorage.setItem("userType","");  
+            localStorage.setItem("userId",""); 
+            localStorage.setItem("enterId","");
           }
         })
         .catch(function(error) {
