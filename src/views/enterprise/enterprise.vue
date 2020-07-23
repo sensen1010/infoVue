@@ -215,7 +215,7 @@ export default {
         formData.append("page",this.currentPage-1);
         formData.append("enterName",this.selectName);
         formData.append("state",this.enterIndex);
-        const token=localStorage.getItem("token");
+        let token=localStorage.getItem("token");
         this.$axios.defaults.headers.common["token"] = token;
         this.$axios.get(this.GLOBAL.serverSrc+'/enter/enter',{ params:{
           enterName: this.selectName,

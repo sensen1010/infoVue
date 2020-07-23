@@ -1,47 +1,27 @@
-import axios from './axios'
-
-let instance = axios()
-
-export default {
-  get(url, params, headers) {
-    let options = {}
-
-    if (params) {
-      options.params = params
-    }
-    if (headers) {
-      options.headers = headers
-    }
-    return instance.get(url, options)
-  },
-  post(url, params, headers, data) {
-    let options = {}
-
-    if (params) {
-      options.params = params
-    }
-    if (headers) {
-      options.headers = headers
-    }
-    return instance.post(url, data, options)
-  },
-  put(url, params, headers) {
-    let options = {}
-
-    if (headers) {
-      options.headers = headers
-    }
-    return instance.put(url, params, options)
-  },
-  delete(url, params, headers) {
-    let options = {}
-
-    if (params) {
-      options.params = params
-    }
-    if (headers) {
-      options.headers = headers
-    }
-    return instance.delete(url, options)
+//输出通用axios实例
+import axios from 'axios';
+ 
+const instance = axios.create({
+   timeout: 10000,
+   headers: {
+    'Content-Type': "application/json;charset=utf-8"
   }
-}
+});
+ 
+export default {
+  userLogin ( data ) {
+    return instance.post('/api/user/login', data);
+  },
+  allUser () {
+    return instance.post('/api/user');
+  },
+  allProduct () {
+   return instance.post('/api/product')
+  },
+  upload (data) {
+    return instance.post('/api/upload',data)
+  },
+  regist (data){
+  	return instance.post('/api/createOrUpdateUser',data)
+  }
+};
