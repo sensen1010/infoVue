@@ -41,7 +41,7 @@ Vue.use(VueRouter)
       path:"Users",
       name:'Users',
       meta:{
-        title:"用户管理"
+        title:"账号管理"
       },
       components:{
         default:Users,

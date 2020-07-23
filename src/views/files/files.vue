@@ -8,8 +8,7 @@
         @select="handleSelect"
       >
         <el-menu-item index="0">所有文件</el-menu-item>
-        <el-menu-item index="1">禁用</el-menu-item>
-        <el-menu-item index="2">回收站</el-menu-item>
+        <el-menu-item index="1">回收站</el-menu-item>
         <el-menu-item>
           <el-switch v-model="showType" active-text="缩略图" inactive-text="列表"></el-switch>
         </el-menu-item>
@@ -25,6 +24,13 @@
       </el-menu>
     </el-header>
     <el-main>
+       <el-radio-group v-model="radio3" size="small">
+      <el-radio-button label="全部"></el-radio-button>
+      <el-radio-button label="图片"  ></el-radio-button>
+      <el-radio-button label="视频"></el-radio-button>
+      <el-radio-button label="音乐"></el-radio-button>
+      <el-radio-button label="文档"></el-radio-button>
+    </el-radio-group>
       <el-row v-if="showType">
         <el-col :span="3" v-for="file in tableData" :key="file.id" style="font-size: 14px;">
           <el-card id="el-file-card" :body-style="{ padding: '0px' }" shadow="hover">
@@ -115,9 +121,10 @@
           drag
           :data="mydata"
           ref="upload"
-          action="http://192.168.1.52:8081/img/up/"
+          action="http://192.168.1.52:8081/file/file"
           multiple
           :on-success="filesuccess"
+          :on-error="fileerror"
           :on-preview="handlePreview"
           :on-remove="handleRemove"
           :before-upload="beforeUpload"
@@ -146,6 +153,7 @@
 export default {
   data() {
     return {
+      radio3:"全部",
       showType: true,
       showimgUrl: this.GLOBAL.serverimg,
       noBtnShow: true,
@@ -163,8 +171,8 @@ export default {
       tableData: [],
       fileList: [],
       mydata: {
-        type: "1",
-        hostList: ["789"]
+        enterId: "",
+        userId:""
       },
       options: [],
       form: {
@@ -208,7 +216,7 @@ export default {
     selectClick() {
       this.selectPlayer();
     },
-    //添加选手
+    //添加
     savePlayer() {
       let formData = new FormData();
       formData.append("playerName", this.form.playerName);
@@ -233,7 +241,7 @@ export default {
           console.log(error);
         });
     },
-    //查询选手
+    //查询
     selectPlayer() {
       let formData = new FormData();
       formData.append("name", this.selectName);
@@ -348,10 +356,19 @@ export default {
         });
     },
     submitUpload() {
-      console.log(this.fileList);
+      this.mydata.enterId=localStorage.getItem("enterId");
+      this.mydata.userId=localStorage.getItem("userId");
       this.$refs.upload.submit();
     },
-    filesuccess() {
+    fileerror(err, file, fileList){
+          console.log(err);
+          console.log(fileList);
+          console.log(file);
+    },
+    filesuccess(response, file, fileList) {
+          console.log(response);
+          console.log(fileList);
+          console.log(file);
       this.selectPlayer();
     }
   }
