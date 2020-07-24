@@ -216,40 +216,20 @@ export default {
     selectClick() {
       this.selectPlayer();
     },
-    //添加
-    savePlayer() {
-      let formData = new FormData();
-      formData.append("playerName", this.form.playerName);
-      formData.append("age", this.form.age);
-      formData.append("phone", this.form.phone);
-      formData.append("Introduction", this.form.Introduction);
-      formData.append("matchId", this.form.matchId);
-      formData.append("userId", "admin");
-      this.$axios
-        .post(this.GLOBAL.serverSrc + "/plays/add", formData)
-        .then(res => {
-          // console.log(JSON.parse(res.data));//数据先转换格式
-          if (res.data.code == "0") {
-            alert(res.data.msg);
-            this.selectPlayer();
-            this.addPlayerShowDialog = false;
-          } else {
-            alert(res.data.msg);
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    },
     //查询
     selectPlayer() {
-      let formData = new FormData();
-      formData.append("name", this.selectName);
-      formData.append("showType", "");
-      formData.append("state", this.playerIndex);
-      formData.append("page", this.currentPage - 1);
+
       this.$axios
-        .post(this.GLOBAL.serverSrc + "/img/imgList", formData)
+        .get(this.GLOBAL.serverSrc + "/file/fileList",{
+        params:{
+          name: this.selectName,
+          enterId:"",
+          fileType:"",
+          state:this.playerIndex,
+          page:this.currentPage-1
+        }
+
+        })
         .then(res => {
           console.log(res); //数据先转换格式
           let data = JSON.parse(res.data.data);
