@@ -20,7 +20,7 @@
       </el-menu-item>
       <el-menu-item index="7">
         <i class="el-icon-video-camera-solid"></i>
-        <span slot="title">节目制作</span>
+        <span slot="title">节目管理</span>
       </el-menu-item>
       <el-menu-item index="8">
         <i class="el-icon-video-camera-solid"></i>

@@ -57,9 +57,6 @@ export default {
             handlers: {
               'image': function (value) {
                    if (value) {
-                     //document.querySelector('.ivu-upload').click();
-                     //document.getElementById("#ivu-upload").click();
-                     //this.$refs.upNewsImg[0].$el.click()
                       document.querySelector('.el-upload').click()
                    } else {
                       this.quill.format('image', false);

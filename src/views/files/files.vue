@@ -2,7 +2,7 @@
   <el-container>
     <el-header>
       <el-menu
-        :default-active="playerIndex"
+        :default-active="fileIndex"
         class="el-menu-demo el-menu-host"
         mode="horizontal"
         @select="handleSelect"
@@ -16,6 +16,15 @@
           <div>
             <el-input size="mini" placeholder="文件名" v-model="selectName"></el-input>
             <el-button type="primary" size="mini" @click="onSubmit">查询</el-button>
+            <el-select v-model="enterId" filterable placeholder="请选择" size="mini" v-if="showEnter" @change="selectClick" >
+     <el-option
+      v-for="item in enterList"
+      :key="item.enterId"
+      :label="item.enterName"
+      :value="item.enterId"
+      >
+    </el-option>
+    </el-select>
           </div>
         </el-menu-item>
         <el-menu-item style="float:right">
@@ -24,27 +33,27 @@
       </el-menu>
     </el-header>
     <el-main>
-       <el-radio-group v-model="radio3" size="small">
+       <el-radio-group v-model="fileTypeId"  size="small" @change="clickFileTypeId">
       <el-radio-button label="全部"></el-radio-button>
-      <el-radio-button label="图片"  ></el-radio-button>
+      <el-radio-button label="图片"></el-radio-button>
+      <el-radio-button label="文档"></el-radio-button>
       <el-radio-button label="视频"></el-radio-button>
       <el-radio-button label="音乐"></el-radio-button>
-      <el-radio-button label="文档"></el-radio-button>
     </el-radio-group>
       <el-row v-if="showType">
         <el-col :span="3" v-for="file in tableData" :key="file.id" style="font-size: 14px;">
           <el-card id="el-file-card" :body-style="{ padding: '0px' }" shadow="hover">
-            <img :src='showimgUrl+"/"+file.imgUrl' class="image"  style="height:140px;width:100%"
-             v-if="file.imgType=='jpg'||file.imgType=='png'"
+            <img :src='showimgUrl+"/"+file.fileUrl' class="image"  style="height:140px;width:100%"
+             v-if="file.fileTypeId=='1'"
             />
             <video
-               :src='showimgUrl+"/"+file.imgUrl'
+               :src='showimgUrl+"/"+file.fileUrl'
                style="height:100%;width:100%"
                controls="controls"
-               v-else-if="file.imgType=='mp4'||file.imgType=='flv'"
+               v-else-if="file.fileTypeId=='3'"
             />
             <div class="file-name">
-              <span>{{file.imgName}}</span>
+              <span>{{file.fileName}}</span>
             </div>
           </el-card>
         </el-col>
@@ -60,28 +69,28 @@
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id"></el-table-column>
-        <el-table-column prop="imgMd5" label="md5"></el-table-column>
-        <el-table-column prop="imgName" label="名称"></el-table-column>
-        <el-table-column prop="imgType" label="文件类型"></el-table-column>
-        <el-table-column prop="showType" label="显示类型"></el-table-column>
+        <el-table-column prop="fileMd5" label="md5"></el-table-column>
+        <el-table-column prop="fileName" label="名称"></el-table-column>
+        <el-table-column prop="fileType" label="文件类型"></el-table-column>
         <el-table-column prop="creationTime" label="添加时间"></el-table-column>
-        <el-table-column prop="imgUrl" label="文件">
+        <el-table-column prop="creationTime" label="添加时间"></el-table-column>
+        <el-table-column prop="fileUrl" label="文件">
           <template slot-scope="scope">
             <img
-              :src='showimgUrl+"/"+scope.row.imgUrl'
+              :src='showimgUrl+"/"+scope.row.fileUrl'
               style="width:50px;height:50px;"
-              v-if="scope.row.imgType=='jpg'||scope.row.imgType=='png'"
+              v-if="scope.row.fileTypeId=='1'"
             />
             <img
               src="../../assets/z123.jpg"
               style="width:50px;height:50px;"
-               v-else-if="scope.row.imgType=='zip'"
+               v-else-if="scope.row.fileTypeId=='2'"
             />
             <video
-               :src='showimgUrl+"/"+scope.row.imgUrl'
+               :src='showimgUrl+"/"+scope.row.fileUrl'
                style="width:50px;height:50px;"
                controls="controls"
-               v-else-if="scope.row.imgType=='mp4'"
+               v-else-if="scope.row.fileTypeId=='3'"
             />
           </template>
         </el-table-column>
@@ -153,7 +162,7 @@
 export default {
   data() {
     return {
-      radio3:"全部",
+      fileTypeId:"全部",
       showType: true,
       showimgUrl: this.GLOBAL.serverimg,
       noBtnShow: true,
@@ -161,9 +170,13 @@ export default {
       auditNoMessageShow: false,
       addFileShowDialog: false,
       formLabelWidth: "120px",
+      //企业列表选项
+        showEnter:false,
+        enterList: [],
+        enterId: '',
       pageSize: 32,
       pagetotal: 0,
-      playerIndex: "0",
+      fileIndex: "0",
       selectName: "",
       currentPage: 1,
       tableColumShow: false,
@@ -186,7 +199,8 @@ export default {
   },
   //页面加载
   created() {
-    this.selectPlayer();
+    this.selectFile();
+    this.showEnterList();
     // this.showMatchItem();
     // this.convert();
   },
@@ -213,19 +227,66 @@ export default {
 
     }
     ,
-    selectClick() {
-      this.selectPlayer();
-    },
-    //查询
-    selectPlayer() {
+     //判断是否显示企业下拉列表
+      showEnterList(){
+       const num= localStorage.getItem("userNum");
+       if(num=="0"){
+         this.selectEnterList();
+       }else{
+         this.showEnter=false;
+       }
 
+      },
+      //查询企业列表
+      selectEnterList(){
+       // alert(this.currentPage);
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.get(this.GLOBAL.serverSrc+'/enter/enter/list').then(res=> {
+              if(res.data.code==0){
+                this.showEnter=true;
+                let data = JSON.parse(res.data.data);
+                console.log(data);
+                this.enterList=data;
+              }       
+           }).catch(function (error) {
+             console.log(error);
+           });
+      },
+      //企业下拉列表选中
+      selectClick(){
+         this.selectFile(); 
+      },
+      //文件类型选择
+      clickFileTypeId(){
+        
+        this.selectFile();
+      },
+    //查询
+    selectFile() {
+      let enterId=localStorage.getItem("enterId");
+      let userNum=localStorage.getItem("userNum");
+      let userId=localStorage.getItem("userId");
+      let fileType=this.fileTypeId;
+      let fileTypeId="";
+      if(fileType=="全部") fileTypeId="";
+      else if(fileType=="图片") fileTypeId="1";
+      else if(fileType=="文档") fileTypeId="2";
+      else if(fileType=="视频") fileTypeId="3";
+      else if(fileType=="音乐") fileTypeId="4";
+      let fileUrl="/file/fileList";
+      if(userNum=="0"){
+          fileUrl="/file/admin/fileList"
+          enterId=this.enterId;
+      }
       this.$axios
-        .get(this.GLOBAL.serverSrc + "/file/fileList",{
+        .get(this.GLOBAL.serverSrc + fileUrl,{
         params:{
           name: this.selectName,
-          enterId:"",
-          fileType:"",
-          state:this.playerIndex,
+          enterId:enterId,
+          fileType:fileTypeId,
+          userId:userId,
+          state:this.fileIndex,
           page:this.currentPage-1
         }
 
@@ -249,16 +310,15 @@ export default {
     handleCurrentChange(val) {
       console.log(val);
 
-      this.selectPlayer();
+      this.selectFile();
     },
     //页头
     handleSelect(key, keyPath) {
       console.log(key);
       if (key != null) {
         this.currentPage = 1;
-        this.playerIndex = keyPath + "";
-        this.selectPlayer();
-
+        this.fileIndex = keyPath + "";
+        this.selectFile();
         if (keyPath == 0) {
           this.okBtnShow = true;
           this.noBtnShow = true;
@@ -286,7 +346,7 @@ export default {
         .post(this.GLOBAL.serverSrc + "/plays/admin/update", formData)
         .then(res => {
           if (res.data.code == 0) {
-            this.selectPlayer();
+            this.selectFile();
           }
         })
         .catch(function(error) {
@@ -308,7 +368,7 @@ export default {
             .post(this.GLOBAL.serverSrc + "/plays/admin/update", formData)
             .then(res => {
               if (res.data.code == 0) {
-                this.selectPlayer();
+                this.selectFile();
               }
             })
             .catch(function(error) {
@@ -320,7 +380,7 @@ export default {
         });
     },
     onSubmit() {
-      this.selectPlayer();
+      this.selectFile();
     },
     showMatchItem() {
       this.$axios
@@ -349,7 +409,7 @@ export default {
           console.log(response);
           console.log(fileList);
           console.log(file);
-      this.selectPlayer();
+      this.selectFile();
     }
   }
 };

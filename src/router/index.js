@@ -7,8 +7,10 @@ const HostsAdmin = () => import('../views/hosts/hostsAdmin.vue')
 const Files = () => import('../views/files/files.vue')
 const News = () => import('../views/news/newsCore.vue')
 const Info = () => import('../views/info/info.vue')
+const InfoEditor = () => import('../views/info/infoEditor.vue')
 const Enter = () => import('../views/enterprise/enterprise.vue')
 const Login = () => import('../views/login/login.vue')
+
 //解决路由重复报错问题
 const originalPush = VueRouter.prototype.push
    VueRouter.prototype.push = function push(location) {
@@ -27,6 +29,14 @@ Vue.use(VueRouter)
       component: Login,
       meta:{
         title: "登录"
+      }
+    },
+    {
+      path: "/infoEditor",
+      name: "infoEditor",
+      component: InfoEditor,
+      meta:{
+        title: "节目编辑"
       }
     },
   {
@@ -96,7 +106,7 @@ Vue.use(VueRouter)
       path:"Info",
       name:'Info',
       meta:{
-        title:"节目制作"
+        title:"节目管理"
       },
       components:{
         default:Info,

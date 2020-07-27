@@ -13,6 +13,7 @@
     "element-ui": "^2.4.5",
     "quill": "^2.0.0-dev.4",
     "vue": "^2.6.11",
+    "vue-draggable-resizable-gorkys": "^2.4.3",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.2.0"
   },

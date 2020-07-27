@@ -177,86 +177,40 @@
     </el-main>
    
      <!-- 节目制作 -->
-    <el-dialog custom-class="infoDialog" title="节目制作" :visible.sync="addInfoShowDialog" width="80%" :before-close="infoDialogClose">
+    <el-dialog custom-class="infoDialog" title="节目制作" :visible.sync="addInfoShowDialog" width="95%" :before-close="infoDialogClose">
       <!-- 第一步 -->
       <el-form>
         <el-row v-if="showInfoDialog">
-          <el-col :span="12">
-            <el-card class="box-card" >
-              <div slot="header" class="clearfix">
-                <span>横向布局</span>
-              </div>
-              <el-card :body-style="{ padding: '0px' }" v-for="traList in transverseList" :key="traList.uuid"  style="width:30%;margin:10px;float:left" shadow="hover">
-               <img :src='showimgUrl+"/"+traList.imgUrl'  style="width:100%" @click="showInfo(traList)">
-              </el-card>
-            </el-card>
+          <el-col :span="9">
+           <p></p>
           </el-col>
-          <el-col :span="12">
-            <el-card class="box-card">
-              <div slot="header" class="clearfix">
-                <span>竖向布局</span>
-              </div>
-              <el-card :body-style="{ padding: '0px' }" v-for="verList in verticalList" :key="verList.uuid"  style="width:30%;margin:10px;float:left" shadow="hover">
-            <img :src='showimgUrl+"/"+verList.imgUrl'  style="height:300px;" @click="showInfo(verList)">
-          </el-card>
-            </el-card>
+          <el-col :span="3">
+            <el-button @click="showInfo('0')" style="width:240px;height:135px">横向布局(16:9)</el-button>
+          </el-col>
+          <el-col :span="3">
+             <el-button  @click="showInfo('1')" style="width:135px;height:240px">竖向布局(9:16)</el-button>
+          </el-col>
+          <el-col :span="9">
+             <p></p>
           </el-col>
         </el-row>
         <!-- 第二步 -->
         <el-row v-if="!showInfoDialog">
-          <el-col :span="8">
+          <el-col :span="4">
             <el-card class="box-card" >
-              <div slot="header" class="clearfix">
-                <span>布局</span>
-                <el-button style="float: right; padding: 3px 0" type="text" @click="showInfoDialog = true">重选</el-button>
-              </div>
               <el-card style="width:60%;margin:10px;" shadow="hover">
-               <img :src='showimgUrl+"/"+infoFrom.imgUrl'  style="width:100%">
+               <el-button>背景</el-button>
+               <el-button>文字</el-button>
+               <el-button>图片</el-button>
+               <el-button>视频</el-button>
+               <el-button>音乐</el-button>
               </el-card>
             </el-card>
           </el-col>
-          <el-col :span="16">
+          <el-col :span="20">
             <el-card class="box-card" >
-              <div slot="header" class="clearfix">
-                <span>数据设置</span>
-              </div>
-               <el-form class="infoFrom"  ref="form" :model="infoFrom" label-width="100px">
-              <el-form-item label="节目名称">
-                <el-input v-model="infoFrom.name"></el-input>
-              </el-form-item>
-                <el-row  v-for="(item,index) in infoFrom.layoutNum" :key="index" >
-                 <el-form-item :label='"位置"+item' style="width:400px">
-                     <el-row>
-                       <el-col :span="16">
-                         <el-input v-model="infoFrom.content[item-1]" placeholder="输入(视频/图片)url或者选择文件"></el-input>
-                       </el-col>
-                       <el-col :span="8">
-                          <el-button size="small" type="primary" @click="onInfoFile(item-1)" >选择文件</el-button>
-                       </el-col>
-                     </el-row>
-                 </el-form-item>
-                </el-row>
-                <el-form-item label="开机自启动" style="width:300px">
-                 <el-radio v-model="infoFrom.startOn" label="0">不开启</el-radio>
-                 <el-radio v-model="infoFrom.startOn" label="1">开启</el-radio>
-              </el-form-item>
-              <el-form-item label="跑马灯" style="width:300px">
-                 <el-radio v-model="infoFrom.horseLamp" label="0">不开启</el-radio>
-                 <el-radio v-model="infoFrom.horseLamp" label="1">开启</el-radio>
-              </el-form-item>
-              <el-form-item label="显示位置" style="width:300px" v-if="infoFrom.horseLamp=='1'">
-                  <el-checkbox-group v-model="infoFrom.checkList">
-                  <el-checkbox v-model="infoFrom.horseLampUp" label="0" checked>上</el-checkbox>
-                  <el-checkbox v-model="infoFrom.horseLampDown" label="1">下</el-checkbox>
-                </el-checkbox-group>
-              </el-form-item>
-              <el-form-item label="上跑马灯内容" v-if="infoFrom.horseLamp=='1'">
-                <el-input type="textarea" v-model="infoFrom.horseTextUp"></el-input>
-              </el-form-item>
-              <el-form-item label="下跑马灯内容" v-if="infoFrom.horseLamp=='1'">
-                <el-input type="textarea" v-model="infoFrom.horseTextDown"></el-input>
-              </el-form-item>
-            </el-form>
+              <!-- <div style="width:960px;height:540px;background: #000000;"></div> -->
+              <div style="width:360px;height:640px;background: #000000;"></div>
             </el-card>
           </el-col>
         </el-row>
@@ -456,13 +410,7 @@ export default {
   methods: {
     //显示添加数据栏
     showInfo(val){
-      this.infoFrom.imgUrl=val.imgUrl;
-      this.infoFrom.layoutNum=parseInt(val.layoutNum);
-      // const num=parseInt(val.layoutNum)+1;
-      // for (var i = 1; i < num; i++) { 
-      // this.infoFrom.layoutNum.push(i)
-      // }
-      this.infoFrom.layoutId=val.uuid;
+      console.log(val);
       this.showInfoDialog=false;
     },
     //关闭添加界面弹出框,清除数据
@@ -602,9 +550,14 @@ export default {
     },
     //点击上传按钮，清空文件列
     addInfoBtn() {
-      this.selectLayout("0");
-      this.showInfoDialog=true;
-      this.addInfoShowDialog = true;
+
+      let routeUrl = this.$router.resolve({
+     path: "/infoEditor"
+   });
+   window.open(routeUrl.href, '_blank');
+      // this.selectLayout("0");
+      // this.showInfoDialog=true;
+      // this.addInfoShowDialog = true;
     },
     selectClick() {
       this.selectProgram();
