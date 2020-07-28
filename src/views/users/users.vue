@@ -187,7 +187,6 @@ export default {
     created(){
        this.selectUser();
        this.showEnterList();
-
      // this.convert();
     },
     methods: {
