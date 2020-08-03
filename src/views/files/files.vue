@@ -43,11 +43,11 @@
       <el-row v-if="showType">
         <el-col :span="3" v-for="file in tableData" :key="file.id" style="font-size: 14px;">
           <el-card id="el-file-card" :body-style="{ padding: '0px' }" shadow="hover">
-            <img :src='showimgUrl+"/"+file.fileUrl' class="image"  style="height:140px;width:100%"
+            <img :src='showFileUrl+"/"+file.fileUrl' class="image"  style="height:140px;width:100%"
              v-if="file.fileTypeId=='1'"
             />
             <video
-               :src='showimgUrl+"/"+file.fileUrl'
+               :src='showFileUrl+"/"+file.fileUrl'
                style="height:100%;width:100%"
                controls="controls"
                v-else-if="file.fileTypeId=='3'"
@@ -73,11 +73,10 @@
         <el-table-column prop="fileName" label="名称"></el-table-column>
         <el-table-column prop="fileType" label="文件类型"></el-table-column>
         <el-table-column prop="creationTime" label="添加时间"></el-table-column>
-        <el-table-column prop="creationTime" label="添加时间"></el-table-column>
         <el-table-column prop="fileUrl" label="文件">
           <template slot-scope="scope">
             <img
-              :src='showimgUrl+"/"+scope.row.fileUrl'
+              :src='showFileUrl+"/"+scope.row.fileUrl'
               style="width:50px;height:50px;"
               v-if="scope.row.fileTypeId=='1'"
             />
@@ -87,7 +86,8 @@
                v-else-if="scope.row.fileTypeId=='2'"
             />
             <video
-               :src='showimgUrl+"/"+scope.row.fileUrl'
+               :src='showFileUrl+"/"+scope.row.fileUrl'
+               :poster='showFileUrl+"/"+scope.row.videoImg'
                style="width:50px;height:50px;"
                controls="controls"
                v-else-if="scope.row.fileTypeId=='3'"
@@ -134,11 +134,6 @@
           multiple
           :on-success="filesuccess"
           :on-error="fileerror"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-upload="beforeUpload"
-          :on-change="onFileChange"
-          :before-remove="beforeRemove"
           :file-list="fileList"
           :auto-upload="false"
           list-type="picture"
@@ -164,7 +159,7 @@ export default {
     return {
       fileTypeId:"全部",
       showType: true,
-      showimgUrl: this.GLOBAL.serverimg,
+      showFileUrl: this.GLOBAL.serverimg,
       noBtnShow: true,
       okBtnShow: true,
       auditNoMessageShow: false,
@@ -284,7 +279,7 @@ export default {
         params:{
           name: this.selectName,
           enterId:enterId,
-          fileType:fileTypeId,
+          fileTypeId:fileTypeId,
           userId:userId,
           state:this.fileIndex,
           page:this.currentPage-1

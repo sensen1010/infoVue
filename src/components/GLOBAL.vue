@@ -1,9 +1,9 @@
 
 <script>
-  const serverSrc='http://192.168.1.52:8081';
-  const serverimg='http://192.168.1.52:8080/file/';
-  const serverNewsimg='http://192.168.1.52:8080/newfile/';
-  const token='12345678';
+  const path=window.location.hostname;
+  const serverSrc='http://'+path+':8081';
+  const serverimg='http://'+path+':8080/file/';
+  const token='';
   const hasEnter=false;
   const userSite="111";
     export default
@@ -13,7 +13,6 @@
       token,//用户token身份
       serverSrc,//服务器地址
       hasEnter,//用户登录状态
-      serverNewsimg
     }
 </script>
 
