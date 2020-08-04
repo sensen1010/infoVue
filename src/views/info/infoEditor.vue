@@ -2,7 +2,7 @@
   <div class="infoEditorHome">
     <el-container v-if="showEditor">
       <el-header>选择布局</el-header>
-      <el-main>
+      <el-main >
         <el-row>
           <el-col :span="8">
             <p></p>
@@ -17,6 +17,17 @@
             <p></p>
           </el-col>
         </el-row>
+        <el-dialog
+            title="节目名称"
+            :visible.sync="infoNameDialog"
+            width="30%"
+            center>
+            <el-input v-model="infoName"></el-input>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="infoNameDialog = false">取 消</el-button>
+              <el-button type="primary" @click="infoNameClick()">确 定</el-button>
+            </span>
+          </el-dialog>
       </el-main>
     </el-container>
     <el-container v-else>
@@ -24,7 +35,7 @@
         <div class="editor-header"> 
         <el-row>
           <el-col :span="22">
-            <el-button type="info" size="small" plain>保存</el-button>
+            <el-button type="info" size="small" plain @click="saveInfo()">保存</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button type="info" size="small" plain @click="updateRank('up')">上一层</el-button>
             <el-button type="info" size="small" plain @click="updateRank('down')">下一层</el-button>
@@ -35,7 +46,7 @@
         </el-row>
         </div>
       </el-header>
-      <el-main>
+      <el-main class="infoMain">
         <el-row>
           <el-col :span="24">
                <div class="content">
@@ -49,8 +60,11 @@
                     <li><el-button @click="addTool('text')" >文本</el-button></li>
                     <li><el-button @click="addTool('img')" >图片</el-button></li>
                     <li><el-button @click="addTool('video')">视频</el-button></li>
+                     <li><el-button @click="addTool('time')">时间</el-button></li>
                   </ul>
                  </div>
+                 <div class="editorDiv">
+                    <div style="color:#909399;font-size:14px">{{infoName}}|{{infoType}}</div>
                    <div class="editor" :style="'width:'+infoEditor.width+';height:'+infoEditor.height" >
                             <vue-draggable-resizable
                                 v-for="(item,index) in datalist" 
@@ -76,10 +90,37 @@
                                     <div v-if="item.type=='bj'&&item.color!=''" :style='"background:"+item.color+";background-size:100% 100%;width:100%;height:100%;"'></div>
                                     <img  v-if="item.type=='img'"  controls="controls" :src="showFileUrl+item.src" style="width:100%;height:100%" />
                                     <video  v-if="item.type=='video'"  :src="showFileUrl+item.src" :poster="showFileUrl+item.videoImg" style="width:100%;height:100%;object-fit: fill" />
-                                    <textarea  v-if="item.type=='text'"  @dblclick="editorText(item)" 
+                                    <p v-if="item.type=='time'"
+                                     :style='"background-color:transparent;font-size:"+item.size
+                                    +";text-align:"+item.textAlign+
+                                    ";color:"+item.textColor+";width:100%;height:100%;padding:0px;margin:0px;overflow: hidden;"' 
+                                    >
+                                    {{item.context}}
+                                    </p>
+                                    <textarea  v-if="item.type=='text'&&!item.marquee"  @dblclick="editorTextClick(item)" 
                                     :readonly="item.textReadonly"
-                                    :style='"background-color:transparent;text-align:"+item.textAlign+";outline:none;border:0;width:100%;height:100%;resize: none;overflow-y:hidden"' 
-                                    />
+                                     v-model="item.context"
+                                    :style='"background-color:transparent;font-size:"+item.size
+                                    +";text-align:"+item.textAlign+
+                                    ";color:"+item.textColor+";outline:none;border:0;width:100%;height:100%;resize: none;overflow-y:hidden"' 
+                                    >
+                                    </textarea>
+                                    <marquee v-if="item.type=='text'&&item.marquee" 
+                                      :style='"background-color:transparent;font-size:"+item.size+";text-align:"+item.textAlign+";;outline:none;border:0;width:100%;height:100%;resize: none;overflow-y:hidden"' 
+                                      behavior=scroll 
+                                      :direction="item.marqueeDirection" 
+                                      scrolldelay=2000
+                                      :scrollamount="item.speed" 
+                                     >
+                                    <pre
+                                    v-if="item.marqueeType=='2'"
+                                    :style='"width:100%;margin:0px;color:"+item.textColor'
+                                    >{{item.context}}</pre>
+                                    <pre
+                                    v-else
+                                    :style='"text-align:left;width:100%;margin:0px;color:"+item.textColor'
+                                    >{{item.context}}</pre>
+                                     </marquee>
                              </vue-draggable-resizable>
                              <!--辅助线-->
                                     <span class="ref-line v-line"
@@ -96,11 +137,12 @@
                                     />
                              <!--辅助线END-->
                    </div>
+                   </div>
                    <div class="toolEditor">
                    <ul class="editorList">
                     <!-- 背景颜色工具集 -->
                     <li class="backgroudTool" v-if="backgroudTool"> 
-                      <div style="width:200px;height:40px;background-color:#1989FB;line-height: 40px;color:#ffffff;">背景编辑</div>
+                      <div  class="toolTitle">背景编辑</div>
                       <div>
                       <el-button class="bagButton" @click="infoFileDialogShow('bj','1')" >
                          <img v-if="datalist[0].barg!=''" controls="controls" :src="showFileUrl+datalist[0].barg" style="width:200px;" />  
@@ -111,7 +153,7 @@
                       </div>
                       <div>
                         <ul>
-                          <li><el-button @click="updateBargColor('#ffffff')"  circle></el-button></li>
+                          <li><el-button style="background:#031634" @click="updateBargColor('')"  circle></el-button></li>
                           <li><el-button style="background:#031634" @click="updateBargColor('#031634')" circle></el-button></li>
                           <li><el-button style="background:#CDB380" @click="updateBargColor('#CDB380')"  circle></el-button></li>
                           <li><el-button style="background:#84AF9B" @click="updateBargColor('#84AF9B')"  circle></el-button></li>
@@ -124,39 +166,100 @@
                     <!-- 背景颜色end -->
                     <!-- 图片工具集 -->
                     <li class="imgTool" v-if="imgTool">
-                      <div style="width:200px;height:40px;background-color:#1989FB;line-height: 40px;color:#ffffff;margin-left:5px;">图片编辑</div>
+                      <div class="toolTitle" >图片编辑</div>
+                      <div  class="title">轮播间隔</div>
+                      <div>
+                         <el-select v-model="editorImg.time" placeholder="请选择" style="width:200px;margin-left:5px;" size="mini" @change="editorImgSpeed">
+                          <el-option
+                            v-for="item in imgSpeedList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </div>
+                      <div  class="title">轮播图列表</div>
+                      <div>
                       <ul>
-                          <li>
-                            轮播图片列表
-                          </li>
                           <li v-for="file in activateData.fileList" :key="file.id" style="line-height:100px">
-                            <img :src='showFileUrl+file.src' style="width:150px;height:100px"/>
-                            <el-button icon="el-icon-close" size="mini"></el-button>
+                            <div class="imgList">
+                            <img :src='showFileUrl+file.src' style="width:200px;height:100px"/>
+                            <el-button class="close" icon="el-icon-close" size="mini" @click="deleteImgList(file)"></el-button>
+                            </div>
                           </li>
                           <li>
-                        <el-upload
-                        class="avatar-uploader"
-                        action="https://jsonplaceholder.typicode.com/posts/"
-                        :show-file-list="false"
-                        :on-success="handleAvatarSuccess"
-                        :before-upload="beforeAvatarUpload">
-                        <img v-if="editorBarg.imageUrl" :src="editorBarg.imageUrl" class="avatar">
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                        </el-upload>
+                        <div style="border: 1px dashed #d9d9d9;" @click="addImgList('addImgList')">
+                          <i class="el-icon-plus avatar-uploader-icon"></i>
+                        </div>
                           </li>
                       </ul>
+                      </div>
                     </li>
                     <!-- 图片工具集end -->
                     <!-- 文字工具集 -->
                     <li class="textTool" v-if="textTool">
-                      <div style="width:200px;height:40px;background-color:#1989FB;line-height: 40px;color:#ffffff;margin-left:5px;">文字编辑</div>
-                      <el-button >文字</el-button>
+                      <div  class="toolTitle" >文字编辑</div>
+                      <div  class="title">字体颜色</div>
+                      <div>
+                        <ul>
+                          <li><el-button @click="updateTextColor('#ffffff')"  circle></el-button></li>
+                          <li><el-button style="background:#000000" @click="updateTextColor('#000000')" circle></el-button></li>
+                          <li><el-color-picker v-model="editorText.color" size="small" :active-change="elUpdateTextColor()"></el-color-picker></li>
+                        </ul>
+                      </div>
+                       <div class="title">背景颜色</div>
+                       <div>
+                        <ul>
+                          <li><el-button @click="updateTextBargColor('')"  circle   size="mini">无</el-button></li>
+                          <li><el-button style="background:#ffffff" @click="updateTextBargColor('#ffffff')" circle></el-button></li>
+                          <li><el-color-picker v-model="editorText.bargColor" size="small" :active-change="elUpdateTextBargColor()"></el-color-picker></li>
+                        </ul>
+                      </div>
+                      <div v-if="textToolTime">
+                      <div class="title">是否启动滚动</div>
+                      <div>
+                      <el-radio-group v-model="editorText.marqueeType" @change="editorTextMarquee">
+                      <div>
+                         <el-radio  label="1">不启动</el-radio>
+                      </div>
+                       <div>
+                        <el-radio  label="2">下→上</el-radio>
+                      </div>
+                       <div>
+                        <el-radio label="3">右→左</el-radio>
+                      </div>
+                      </el-radio-group>
+                      </div>
+                      <div  class="title">滚动速度</div>
+                      <div>
+                        <el-select v-model="editorText.speed" placeholder="请选择" style="width:200px;margin-left:5px;" size="mini" @change="editorTextSpeed">
+                          <el-option
+                            v-for="item in textSpeedList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </div>
+                      </div>
+                      <div class="title">字体大小</div>
+                      <div>
+                        <el-select v-model="editorText.size" placeholder="请选择" style="width:200px;margin-left:5px;" size="mini" @change="editorTextSize">
+                          <el-option
+                            v-for="item in textSizeList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </div>
                     </li>
                     <!-- 文字工具集end -->
                     <!-- 视频工具集 -->
                     <li class="videoTool" v-if="videoTool">
-                      <div style="width:200px;height:40px;background-color:#1989FB;line-height: 40px;color:#ffffff;margin-left:5px;">视频编辑</div>
-                      <el-button >视频</el-button></li>
+                      <div  class="toolTitle" >视频编辑</div>
+                      <div>无</div>
+                    </li>
                     <!-- 视频工具集end -->
                   </ul>
                    </div>
@@ -215,6 +318,9 @@
 export default {
   data() {
     return {
+      infoName:'',
+      infoType:'',
+      infoNameDialog:false,
       showEditor: true,
       //上传文件
       showFileUrl: this.GLOBAL.serverimg,
@@ -231,6 +337,41 @@ export default {
       imgTool:false,
       textTool:false,
       videoTool:false,
+      textToolTime:true,
+      //图片编辑工具
+      editorImg:{
+        time:'5'
+      },
+      imgSpeedList:[
+        {
+          value: '3',
+          label: '3s'
+        }, {
+          value: '5',
+          label: '5s'
+        }, {
+          value: '10',
+          label: '10s'
+        }, {
+          value: '20',
+          label: '20s'
+        }, {
+          value: '30',
+          label: '30s'
+        }, {
+          value: '60',
+          label: '60s'
+        }
+      ],
+      //文字编辑工具
+      editorText:{
+        color:'#000000',
+        bargColor:'',
+        size:'16px',
+        speed:'100',
+        marqueeType:"1",
+        marqueeDirection:'left'
+      },
       //编辑框大小
       infoEditor:{
           width:'640px',
@@ -250,6 +391,41 @@ export default {
       activateData:{},
       //选中的类型
       activateType:"",
+       //字体滚动速度数据
+      textSpeedList:[{
+         value: '20',
+         label: '慢'
+      },
+      {
+         value: '100',
+         label: '中'
+      },
+      {
+         value: '150',
+         label: '快'
+      }
+      ],
+      //字体大小数据
+      textSizeList: [{
+          value: '12px',
+          label: '12px'
+        }, {
+          value: '16px',
+          label: '16px'
+        }, {
+          value: '20px',
+          label: '20px'
+        }, {
+          value: '24px',
+          label: '24px'
+        }, {
+          value: '36px',
+          label: '36px'
+        }, {
+          value: '48px',
+          label: '48px'
+        }
+        ],
       //数据
       datalist:[
               {
@@ -274,7 +450,12 @@ export default {
                  src:"92452e6a88f34597b739b4d966ca7d91/img//c1eb1a0cda98e8b49c3f433029850769.jpg",
                  w: 100,
                  h: 100,
-                 fileList:[{name:"asd",src:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1594815263697&di=5bb2d9b62db90c3962af776def16644c&imgtype=0&src=http%3A%2F%2Fp2.so.qhimgs1.com%2Ft01dfcbc38578dac4c2.jpg"}],
+                 speedTime:'5',
+                 fileList:[{
+                 id:'c1eb1a0cda98e8b49c3f433029850769',
+                 name:'asd',
+                 src:"92452e6a88f34597b739b4d966ca7d91/img//c1eb1a0cda98e8b49c3f433029850769.jpg"
+                 }],
                  z:3,
               },
               {
@@ -286,6 +467,11 @@ export default {
                 resi:true,
                 drag:true,
                 textReadonly:true,
+                context:"asd",
+                marquee:false,
+                marqueeType:'1',
+                marqueeDirection:'left',
+                speed:'100',
                 h: 100,
                 z:2,
                 color:"",
@@ -299,15 +485,35 @@ export default {
   //页面加载
   created() {},
   methods: {
+    //保存节目
+    saveInfo(){
+      console.log(this.datalist);
+    },
+    //设置界面名称
+    infoNameClick(){
+        //显示编辑界面
+        if(this.infoName!=""){
+          this.showEditor=false;
+        }else{
+          this.$message({
+          showClose: true,
+          duration:1000,
+          message: '请设置名称',
+          type: 'warning'
+        });
+        }
+        
+    },
     //添加组件
       addTool(val){
-         let num=this.datalist.length;
+        let num=this.datalist.length;
+        let id=this.generateUUID();
         if(val=="bj"){
           console.log(val);
         }
         else if(val=="text"){   
           this.datalist.push({
-                id:num+1,
+                id:id,
                 type:'text',
                 x:0,
                 y:0,
@@ -317,15 +523,39 @@ export default {
                 resi:true,
                 drag:true,
                 color:"",
+                marqueeType:"1",
+                marquee:false,
+                marqueeDirection:'left',
+                speed:'100',
+                context:'',
                 textReadonly:true,
-                textColor:"",
+                textColor:"#000000",
+                textAlign:"center",
+                size:"16px"
+         });
+        }
+        else if(val=="time"){   
+          this.datalist.push({
+                id:id,
+                type:'time',
+                x:0,
+                y:0,
+                w: 150,
+                h: 100,
+                z:num+1,
+                resi:true,
+                drag:true,
+                color:"",
+                context:'20/04/04 17:25',
+                textReadonly:true,
+                textColor:"#000000",
                 textAlign:"center",
                 size:"16px"
          });
         }
         else if(val=="img"){
           this.datalist.push({
-                id:num+1,
+                id:id,
                 type:'img',
                 x:0,
                 y:0,
@@ -333,11 +563,11 @@ export default {
                 h: 100,
                 z:num+1,
                 src:'',
+                speedTime:'5',
                 fileList:[],
                 resi:true,
                 drag:true,
          })
-
         this.infoFileDialogShow("addImg","1");
         }
         else if(val=="video"){
@@ -351,7 +581,7 @@ export default {
               }
           }
           this.datalist.push({
-                id:num+1,
+                id:id,
                 type:'video',
                 x:0,
                 y:0,
@@ -367,8 +597,36 @@ export default {
         }
         this.activateData=this.datalist[num];
         this.activate=true;
+        if(val=="text"){
+          this.editorText.marqueeType=this.activateData.marqueeType;
+          this.editorText.color=this.activateData.textColor;
+          this.editorText.bargColor=this.activateData.bargColor;
+          this.editorText.size=this.activateData.size;
+          this.editorText.speed=this.activateData.speed;
+        }
+        if(val=="time"){
+          this.editorText.color=this.activateData.textColor;
+          this.editorText.bargColor=this.activateData.bargColor;
+          this.editorText.size=this.activateData.size;
+        }
+        if(val=="img"){
+          this.editorImg.time=this.activateData.speedTime;
+        }
         this.showToolType(this.activateData.type);
       },
+    //获得唯一标识符
+    generateUUID() {
+    var d = new Date().getTime();
+    if (window.performance && typeof window.performance.now === "function") {
+        d += performance.now(); //use high-precision timer if available
+    }
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
+    },
     //删除组件
     deleteTool(){
       let active= this.activate;
@@ -388,6 +646,27 @@ export default {
        this.activateData=this.datalist[num-1];
        this.showToolType(this.activateData.type);
       }
+    },
+    //删除图片
+    deleteImgList(val){
+       let id= this.activateData.id;
+       let date=this.datalist;
+       let a=0;
+       for(let item of date){
+          if(item.id==id){
+            let size=this.datalist[a].fileList.length;
+             if(size>=2){
+             this.datalist[a].fileList = this.datalist[a].fileList.filter(t => t.id != val.id);
+             this.activateData.fileList= this.activateData.fileList.filter(t => t.id != val.id);
+             this.activateData.src=this.datalist[a].fileList[0].src;
+             this.datalist[a].src= this.datalist[a].fileList[0].src;
+             }
+             
+          }
+          a++;
+       }
+      
+       
     },
     //修改组件层级
     updateRank(val){
@@ -442,9 +721,14 @@ export default {
       }
        else if(val=="text"){
         this.textTool=true;
+        this.textToolTime=true;
       }
        else if(val=="video"){
         this.videoTool=true;
+      }
+      else if(val=="time"){
+        this.textTool=true;
+        this.textToolTime=false;
       }
     },  
     //文件选择弹出
@@ -452,6 +736,24 @@ export default {
         this.infoActionType=type;
         this.infoFileType=fileType;
         this.selectFileList();
+    },
+    //添加图片文件列表
+    addImgList(val){
+      console.log(val);
+      this.infoFileDialogShow("addImgList","1");
+    },
+    //修改图片轮播时间
+    editorImgSpeed(){
+      let id=this.activateData.id;
+      let date=this.datalist;
+      let a=0;
+      for(let item of date){
+        if(item.id==id){
+          this.datalist[a].speedTime=this.editorImg.time;
+          this.activateData.speedTime=this.editorImg.time;
+        }
+        a++;
+      }
     },
     //查询文件
     selectFileList(){
@@ -496,9 +798,10 @@ export default {
       else if(this.infoActionType=="addImg"){
         let size=this.datalist.length;
         this.datalist[size-1].src=val.fileUrl;
+         let id=this.generateUUID();
         this.datalist[size-1].fileList.push(
           {
-                id:val.fileUrlId,
+                id:id,
                 name:val.fileName,
                 src:val.fileUrl  
          }
@@ -509,6 +812,27 @@ export default {
         let size=this.datalist.length;
         this.datalist[size-1].src=val.fileUrl;
         this.datalist[size-1].videoImg=val.videoImg;
+      }
+      //添加当前图片列表
+      else if(this.infoActionType=="addImgList"){
+         let id=this.activateData.id;
+         let date=this.datalist;
+         let a=0;
+         for(let item of date){
+            if(item.id==id){
+              let id=this.generateUUID();
+              this.datalist[a].fileList.push(
+                {
+                        id:id,
+                        name:val.fileName,
+                        src:val.fileUrl  
+                }
+              );
+              this.activateData=this.datalist[a];
+              break;
+            }
+            a++;
+         }
       }
       this.infoFileDialog=false;
     },
@@ -532,6 +856,7 @@ export default {
         }
         return isJPG && isLt2M;
       },
+     //修改背景图片颜色 
      updateBargColor(val){
         this.datalist[0].color=val;
         this.datalist[0].barg='';
@@ -545,8 +870,116 @@ export default {
      },
     //----------- 背景图操作监听end
     //-----------文字修改
+    //修改字体颜色
+    updateTextColor(val){
+        let id=this.activateData.id;
+        let date=this.datalist;
+        let a=0;
+        for(let item of date){
+          if(item.id==id){
+             this.datalist[a].textColor=val;
+             this.activateData.textColor=val;
+             this.editorText.color=val;
+             break;
+          }
+          a++;
+        }
+    },
+    elUpdateTextColor(){
+        let id=this.activateData.id;
+        let date=this.datalist;
+        let a=0;
+        for(let item of date){
+          if(item.id==id){
+             this.datalist[a].textColor=this.editorText.color;
+             this.activateData.textColor=this.editorText.color;
+             break;
+          }
+          a++;
+        }
+    },
+    //修改字体背景颜色
+    updateTextBargColor(val){
+        let id=this.activateData.id;
+        let date=this.datalist;
+        let a=0;
+        for(let item of date){
+          if(item.id==id){
+             this.datalist[a].color=val;
+             this.activateData.color=val;
+             this.editorText.bargColor=val;
+             break;
+          }
+          a++;
+        }
+    },
+    elUpdateTextBargColor(){
+        let id=this.activateData.id;
+        let date=this.datalist;
+        let a=0;
+        for(let item of date){
+          if(item.id==id){
+             this.datalist[a].color=this.editorText.bargColor;
+             this.activateData.color=this.editorText.bargColor;
+             break;
+          }
+          a++;
+        }
+    },
+    //修改字体大小
+    editorTextSize(){
+        let id=this.activateData.id;
+        let date=this.datalist;
+        let a=0;
+        for(let item of date){
+          if(item.id==id){
+             this.datalist[a].size=this.editorText.size;
+             this.activateData.size=this.editorText.size;
+             break;
+          }
+          a++;
+        }
+    },
+    //修改走马灯效果
+    editorTextMarquee(){
+        let id=this.activateData.id;
+        let date=this.datalist;
+        let a=0;
+        let marqueeType=this.editorText.marqueeType;
+        for(let item of date){
+          if(item.id==id){
+             this.datalist[a].marqueeType=this.editorText.marqueeType;
+             this.activateData.marqueeType=this.editorText.marqueeType;
+              if(marqueeType=="1"){
+                this.datalist[a].marquee=false;
+              }else if(marqueeType=="2"){
+                this.datalist[a].marqueeDirection="up";
+                this.datalist[a].marquee=true;
+              }else{
+                this.datalist[a].marqueeDirection="left";
+                this.datalist[a].marquee=true;
+              }
+             break;
+          }
+          a++;
+        }
+    },
+    //修改滚动速度
+    editorTextSpeed(){
+        let id=this.activateData.id;
+        let date=this.datalist;
+        let a=0;
+        for(let item of date){
+          if(item.id==id){
+             this.datalist[a].speed=this.editorText.speed;
+             this.activateData.speed=this.editorText.speed;
+             break;
+          }
+          a++;
+        }
+    },
     //双击修改
-    editorText(val){
+    editorTextClick(val){
       if(val.type=="text"){
         this.activateData.drag=false;
         this.activateData.textReadonly=false;
@@ -557,6 +990,30 @@ export default {
        if(val.type!="bj"){
       this.activateData=val;
       this.activate=true;
+        if(val.type=="text"){
+          this.editorText.marqueeType=val.marqueeType;
+          this.editorText.color=val.textColor;
+          this.editorText.bargColor=val.bargColor;
+          this.editorText.size=val.size;
+          this.editorText.speed=val.speed;
+          let date=this.datalist;
+          let a=0;
+           for(let item of date) {
+                  if(item.id==val.id){
+                    this.datalist[a].marquee=false;
+                    break;
+                  }
+                  a++;
+          }
+        }
+        if(val.type=="time"){
+          this.editorText.color=val.textColor;
+          this.editorText.bargColor=val.bargColor;
+          this.editorText.size=val.size;
+        }
+        if(val.type=="img"){
+          this.editorImg.time=val.speedTime;
+        }
       }
       this.showToolType(this.activateData.type);
       console.log(this.activateData);
@@ -566,6 +1023,30 @@ export default {
        if(val.type=="text"){
         this.activateData.drag=true;
         this.activateData.textReadonly=true;
+        let date=this.datalist;
+          let a=0;
+           for(let item of date) {
+                  if(item.id==val.id){
+                    if(this.editorText.marqueeType!="1"){
+                    this.datalist[a].context=val.context;
+                    this.datalist[a].marquee=true;
+                    break;
+                    }
+                  }
+                  a++;
+          }
+
+      //     let formData = new FormData();
+      // formData.append("contex",JSON.stringify(this.datalist));
+      // this.$axios
+      //   .post(this.GLOBAL.serverSrc + "/program/add", formData)
+      //   .then(res => {
+      //     console.log(res);
+      //   })
+      //   .catch(function(error) {
+      //     console.log(error);
+      //   }); 
+
        }
     },
     //监听控件的大小变化
@@ -599,16 +1080,16 @@ export default {
             this.infoEditor.height='540px'
             this.datalist[0].w=960;
             this.datalist[0].h=540;
+            this.infoType="16:9"
         }else{
             //2.5倍
             this.infoEditor.width='432px';
             this.infoEditor.height='768px';
             this.datalist[0].w=432;
             this.datalist[0].h=768;
+             this.infoType="9:16"
         }
-        //显示编辑界面
-        this.showEditor=false;
-
+        this.infoNameDialog=true;
     },
   },
 };
@@ -622,7 +1103,9 @@ export default {
   margin: 0px auto;
   background: #F8F8F8;
 }
-
+.infoEditorHome .infoMain{
+  padding: 0px;
+}
 /* 头部样式 */
 
 .infoEditorHome .editor-header{
@@ -641,6 +1124,10 @@ export default {
     margin: 0px auto;
 }
 
+.infoEditorHome .editorHome .editorDiv{
+    display: inline-block;
+    position: relative;
+}
 .infoEditorHome .editorHome .editor{
     display: inline-block;
     position: relative;
@@ -652,6 +1139,7 @@ export default {
 .infoEditorHome .editorHome .toolHome{
   vertical-align: top;
   display: inline-block;
+  margin-top: 18px;
 }
 .infoEditorHome .editorHome .toolHome .toolList{
   margin-top: 0px;
@@ -663,6 +1151,7 @@ export default {
 .infoEditorHome .editorHome .toolEditor{
   vertical-align: top;
   display: inline-block;
+  margin-top: 18px;
 }
 .infoEditorHome .editorHome .toolEditor .editorList{
   margin-top: 0px;
@@ -670,6 +1159,17 @@ export default {
   list-style: none;
   padding-inline-start:5px;
 }
+
+.infoEditorHome .editorHome .toolEditor .editorList .title{
+  background:#E0DEE0;width:200px;margin-left:5px;
+  margin-top: 5px;
+  
+}
+.infoEditorHome .editorHome .toolEditor .editorList .toolTitle{
+  width:200px;
+  height:40px;background-color:#1989FB;line-height: 40px;color:#ffffff;margin-left:5px;
+}
+
 /* ------------左右工具栏部分end ---------*/
 /* ------------背景图部分 ---------*/
 /* 上传组件 */
@@ -679,6 +1179,7 @@ export default {
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    
   }
   .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
@@ -711,7 +1212,28 @@ export default {
   .infoEditorHome .editorHome .toolEditor .editorList .backgroudTool .bagButton{
     padding: 0px;
   }
+/* ------------背景图部分end ---------*/
+/* ------------文字部分 ---------*/
+/* 颜色选择 */
+  .infoEditorHome .editorHome .toolEditor .editorList .textTool ul li{
+  float: left;
+  }
+/* ------------文字部分end ---------*/
+/* ------------图片部分 ---------*/
 
+  .infoEditorHome .editorHome .toolEditor .editorList .imgTool .imgList{
+   position:relative;
+   height: 100px;
+   margin-top: 5px;
+  }
+ .infoEditorHome .editorHome .toolEditor .editorList .imgTool .imgList .close{
+   position: absolute;
+   right: 0px;
+   top: 0px;
+   background-color:transparent;
+            border-style:none;
+  }
+/* ------------图片部分end ---------*/
 /* 文件选择框样式 */
 #info-file-card{
   height:100px;margin:10px;

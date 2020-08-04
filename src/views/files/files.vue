@@ -48,7 +48,8 @@
             />
             <video
                :src='showFileUrl+"/"+file.fileUrl'
-               style="height:100%;width:100%"
+               :poster='showFileUrl+"/"+file.videoImg'
+               style="height:100%;width:100%;"
                controls="controls"
                v-else-if="file.fileTypeId=='3'"
             />
@@ -92,6 +93,7 @@
                controls="controls"
                v-else-if="scope.row.fileTypeId=='3'"
             />
+            
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="120">
@@ -103,7 +105,6 @@
               v-if="okBtnShow"
             >通过</el-button>
             <el-button
-              @click="playerClickNo(scope.row)"
               type="text"
               size="small"
               v-if="noBtnShow"
@@ -425,6 +426,7 @@ export default {
 #el-file-card{
   height:135px;margin:10px;
   position:relative;
+  background: #000000;
 }
 #el-file-card .file-name{
   width: 100%;
