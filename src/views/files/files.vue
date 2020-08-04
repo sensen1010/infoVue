@@ -130,7 +130,7 @@
           drag
           :data="mydata"
           ref="upload"
-          action="http://:8081/file/file"
+          :action='upFileUrl+"/file/file"'
           multiple
           :on-success="filesuccess"
           :on-error="fileerror"
@@ -159,6 +159,7 @@ export default {
     return {
       fileTypeId:"全部",
       showType: true,
+      upFileUrl:this.GLOBAL.serverSrc,
       showFileUrl: this.GLOBAL.serverimg,
       noBtnShow: true,
       okBtnShow: true,
