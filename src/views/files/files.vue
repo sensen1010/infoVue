@@ -130,7 +130,7 @@
           drag
           :data="mydata"
           ref="upload"
-          action="http://192.168.1.52:8081/file/file"
+          action="http://:8081/file/file"
           multiple
           :on-success="filesuccess"
           :on-error="fileerror"
