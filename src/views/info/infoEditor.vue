@@ -35,7 +35,8 @@
         <div class="editor-header"> 
         <el-row>
           <el-col :span="22">
-            <el-button type="info" size="small" plain @click="saveInfo()">保存</el-button>
+            
+            <el-button type="info" size="small" plain @click="saveInfoClick()">保存</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button type="info" size="small" plain @click="updateRank('up')">上一层</el-button>
             <el-button type="info" size="small" plain @click="updateRank('down')">下一层</el-button>
@@ -47,6 +48,13 @@
         </div>
       </el-header>
       <el-main class="infoMain">
+        <el-row :span="24">
+          <el-col :span="22">
+            <p style="color:#909399;font-size:14px;margin:0px">
+              {{infoName}}|{{infoTypeName}}
+            </p>
+          </el-col>
+        </el-row>
         <el-row>
           <el-col :span="24">
                <div class="content">
@@ -61,11 +69,11 @@
                     <li><el-button @click="addTool('img')" >图片</el-button></li>
                     <li><el-button @click="addTool('video')">视频</el-button></li>
                      <li><el-button @click="addTool('time')">时间</el-button></li>
+                     
                   </ul>
                  </div>
-                 <div class="editorDiv">
-                    <div style="color:#909399;font-size:14px">{{infoName}}|{{infoType}}</div>
-                   <div class="editor" :style="'width:'+infoEditor.width+';height:'+infoEditor.height" >
+                 <div class="editorDiv"  ref="editorDiv">
+                  <div  class="editor" :style="'width:'+infoEditor.width+';height:'+infoEditor.height" >
                             <vue-draggable-resizable
                                 v-for="(item,index) in datalist" 
                                     :key="index" 
@@ -84,10 +92,10 @@
                                     @refLineParams="getRefLineParams"
                                     @resizing="onResize"
                                     @dragging="onDrag"
-                                    :style='"background-color:"+item.color'
+                                    :style='"background-color:"+item.bargColor'
                                      >
-                                    <div v-if="item.type=='bj'&&item.barg!=''" :style='"background-image:url("+showFileUrl+item.barg+");background-repeat:no-repeat;background-size:cover;width:100%;height:100%;"'></div>
-                                    <div v-if="item.type=='bj'&&item.color!=''" :style='"background:"+item.color+";background-size:100% 100%;width:100%;height:100%;"'></div>
+                                    <div v-if="item.type=='bj'&&item.bargImg!=''" :style='"background-image:url("+showFileUrl+item.bargImg+");background-repeat:no-repeat;background-size:cover;width:100%;height:100%;"'></div>
+                                    <div v-if="item.type=='bj'&&item.bargColor!=''" :style='"background:"+item.bargColor+";background-size:100% 100%;width:100%;height:100%;"'></div>
                                     <img  v-if="item.type=='img'"  controls="controls" :src="showFileUrl+item.src" style="width:100%;height:100%" />
                                     <video  v-if="item.type=='video'"  :src="showFileUrl+item.src" :poster="showFileUrl+item.videoImg" style="width:100%;height:100%;object-fit: fill" />
                                     <p v-if="item.type=='time'"
@@ -100,6 +108,7 @@
                                     <textarea  v-if="item.type=='text'&&!item.marquee"  @dblclick="editorTextClick(item)" 
                                     :readonly="item.textReadonly"
                                      v-model="item.context"
+                                     v-text="item.context"
                                     :style='"background-color:transparent;font-size:"+item.size
                                     +";text-align:"+item.textAlign+
                                     ";color:"+item.textColor+";outline:none;border:0;width:100%;height:100%;resize: none;overflow-y:hidden"' 
@@ -145,7 +154,7 @@
                       <div  class="toolTitle">背景编辑</div>
                       <div>
                       <el-button class="bagButton" @click="infoFileDialogShow('bj','1')" >
-                         <img v-if="datalist[0].barg!=''" controls="controls" :src="showFileUrl+datalist[0].barg" style="width:200px;" />  
+                         <img v-if="datalist[0].bargImg!=''" controls="controls" :src="showFileUrl+datalist[0].bargImg" style="width:200px;" />  
                          <i v-else class="el-icon-plus avatar-uploader-icon"></i>      
                       </el-button>
                       <div> 
@@ -315,11 +324,14 @@
   </div>
 </template>
 <script>
+
 export default {
   data() {
     return {
+      infoId:'',
       infoName:'',
       infoType:'',
+      infoTypeName:'',
       infoNameDialog:false,
       showEditor: true,
       //上传文件
@@ -435,49 +447,9 @@ export default {
                  drag:false,
                  w:'',
                  h:'',
-                 color:'',
-                 barg:'',
+                 bargColor:'',
+                 bargImg:'',
                  z:1,
-              },
-              {
-                 id:'2',
-                 type:'img',
-                 x:200,
-                 y:50,
-                 style:'',
-                 resi:true,
-                 drag:true,
-                 src:"92452e6a88f34597b739b4d966ca7d91/img//c1eb1a0cda98e8b49c3f433029850769.jpg",
-                 w: 100,
-                 h: 100,
-                 speedTime:'5',
-                 fileList:[{
-                 id:'c1eb1a0cda98e8b49c3f433029850769',
-                 name:'asd',
-                 src:"92452e6a88f34597b739b4d966ca7d91/img//c1eb1a0cda98e8b49c3f433029850769.jpg"
-                 }],
-                 z:3,
-              },
-              {
-                id:'3',
-                type:'text',
-                x:200,
-                y:200,
-                w: 200,
-                resi:true,
-                drag:true,
-                textReadonly:true,
-                context:"asd",
-                marquee:false,
-                marqueeType:'1',
-                marqueeDirection:'left',
-                speed:'100',
-                h: 100,
-                z:2,
-                color:"",
-                textColor:"",
-                textAlign:"center",
-                size:"16px"
               }
             ]
     };
@@ -485,9 +457,67 @@ export default {
   //页面加载
   created() {},
   methods: {
+    //保存节目按钮
+    saveInfoClick(){
+      const proId=this.infoId;
+      if(proId==""||proId==null){
+        this.saveInfo();
+      }else{
+        this.updateInfo();
+      }
+    },
+    //更新节目
+    updateInfo(){
+      const enterId=localStorage.getItem("enterId");
+      let data=JSON.stringify(this.datalist);
+      let contentHtml=this.$refs.editorDiv.innerHTML;
+      const proId=this.infoId;
+       let formData=new FormData();
+      formData.append("enterId",enterId);
+      formData.append("content",data);
+      formData.append("contentHtml",contentHtml);
+      this.$axios.patch(this.GLOBAL.serverSrc+'/program/pro/'+proId,formData).then(res=> {
+          if(res.data.code=="0"){
+           //alert(res.data.proId+"添加成功")
+            this.infoId=res.data.proId;
+            this.$message({
+              message: '保存成功',
+              duration:1000,
+              type: 'success'
+            });
+          }
+           }).catch(function (error) {
+             console.log(error);
+      });
+    },
     //保存节目
     saveInfo(){
-      console.log(this.datalist);
+      const enterId=localStorage.getItem("enterId");
+      const userId=localStorage.getItem("userId");
+      const data=JSON.stringify(this.datalist);
+      const infoName=this.infoName;
+      const layoutType=this.infoType;
+      const contentHtml=this.$refs.editorDiv.innerHTML;
+      let formData=new FormData();
+      formData.append("enterId",enterId);
+      formData.append("userId",userId);
+      formData.append("content",data);
+      formData.append("name",infoName);
+      formData.append("layoutType",layoutType);
+      formData.append("contentHtml",contentHtml);
+      this.$axios.post(this.GLOBAL.serverSrc+'/program/pro/add',formData).then(res=> {
+          if(res.data.code=="0"){
+           //alert(res.data.proId+"添加成功")
+            this.infoId=res.data.proId;
+            this.$message({
+              message: '保存成功',
+              duration:1000,
+              type: 'success'
+            });
+          }
+           }).catch(function (error) {
+             console.log(error);
+      });
     },
     //设置界面名称
     infoNameClick(){
@@ -504,10 +534,26 @@ export default {
         }
         
     },
+    //格式化时间
+     formatDate(inputTime) {
+        const date = new Date(inputTime);
+        const y = date.getFullYear();
+        let m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        let d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        let h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        let minute = date.getMinutes();
+//        var second = date.getSeconds();
+        minute = minute < 10 ? ('0' + minute) : minute;
+//        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d+' '+h+':'+minute;
+      },
     //添加组件
       addTool(val){
-        let num=this.datalist.length;
-        let id=this.generateUUID();
+        const num=this.datalist.length;
+        const id=this.generateUUID();
         if(val=="bj"){
           console.log(val);
         }
@@ -522,7 +568,7 @@ export default {
                 z:num+1,
                 resi:true,
                 drag:true,
-                color:"",
+                bargColor:"",
                 marqueeType:"1",
                 marquee:false,
                 marqueeDirection:'left',
@@ -535,18 +581,19 @@ export default {
          });
         }
         else if(val=="time"){   
+          const dataTime=this.formatDate(new Date());
           this.datalist.push({
                 id:id,
                 type:'time',
                 x:0,
                 y:0,
                 w: 150,
-                h: 100,
+                h: 20,
                 z:num+1,
                 resi:true,
                 drag:true,
-                color:"",
-                context:'20/04/04 17:25',
+                bargColor:"",
+                context:dataTime,
                 textReadonly:true,
                 textColor:"#000000",
                 textAlign:"center",
@@ -616,7 +663,7 @@ export default {
       },
     //获得唯一标识符
     generateUUID() {
-    var d = new Date().getTime();
+    let d = new Date().getTime();
     if (window.performance && typeof window.performance.now === "function") {
         d += performance.now(); //use high-precision timer if available
     }
@@ -629,11 +676,11 @@ export default {
     },
     //删除组件
     deleteTool(){
-      let active= this.activate;
+      const active= this.activate;
       if(active){
-       let id= this.activateData.id;
-       let z=this.activateData.z;
-       let date=this.datalist;
+       const id= this.activateData.id;
+       const z=this.activateData.z;
+       const date=this.datalist;
        let a=0;
        for(let item of date){
           if(item.z>z){
@@ -642,19 +689,19 @@ export default {
           a++;
        }
        this.datalist = this.datalist.filter(t => t.id != id)
-       let num=this.datalist.length;
+       const num=this.datalist.length;
        this.activateData=this.datalist[num-1];
        this.showToolType(this.activateData.type);
       }
     },
     //删除图片
     deleteImgList(val){
-       let id= this.activateData.id;
-       let date=this.datalist;
+       const id= this.activateData.id;
+       const date=this.datalist;
        let a=0;
        for(let item of date){
           if(item.id==id){
-            let size=this.datalist[a].fileList.length;
+            const size=this.datalist[a].fileList.length;
              if(size>=2){
              this.datalist[a].fileList = this.datalist[a].fileList.filter(t => t.id != val.id);
              this.activateData.fileList= this.activateData.fileList.filter(t => t.id != val.id);
@@ -670,10 +717,10 @@ export default {
     },
     //修改组件层级
     updateRank(val){
-      let z=this.activateData.z;
-      let id=this.activateData.id;
-      let size=this.datalist.length;
-      let date=this.datalist;
+      const z=this.activateData.z;
+      const id=this.activateData.id;
+      const size=this.datalist.length;
+      const date=this.datalist;
       if(val=="up"){
         if(z<size){
             let a=0;
@@ -729,6 +776,8 @@ export default {
       else if(val=="time"){
         this.textTool=true;
         this.textToolTime=false;
+      }else{
+        this.backgroudTool=true;
       }
     },  
     //文件选择弹出
@@ -744,8 +793,8 @@ export default {
     },
     //修改图片轮播时间
     editorImgSpeed(){
-      let id=this.activateData.id;
-      let date=this.datalist;
+      const id=this.activateData.id;
+      const date=this.datalist;
       let a=0;
       for(let item of date){
         if(item.id==id){
@@ -759,14 +808,14 @@ export default {
     selectFileList(){
         const num= localStorage.getItem("userNum");
         let url="";
-        let enterId=localStorage.getItem("enterId");
-        let userId=localStorage.getItem("userId");
+        const enterId=localStorage.getItem("enterId");
+        const userId=localStorage.getItem("userId");
         if(num=="1"){
         url="/file/fileList";
         }else if(num=="0"){
         url="/file/admin/fileList";
         }
-        let token=localStorage.getItem("token");
+        const token=localStorage.getItem("token");
         this.$axios.defaults.headers.common["token"] = token;
         this.$axios.get(this.GLOBAL.serverSrc+url,{ params:{
           userId:userId,
@@ -775,9 +824,9 @@ export default {
           enterId:enterId,
         }}).then(res=> {
           console.log(res);  
-          let data = JSON.parse(res.data.data);
+          const data = JSON.parse(res.data.data);
            this.filepagetotal = data[0].size;
-           let redate =
+           const redate =
             typeof data[0].data == "string"
               ? JSON.parse(data[0].data)
               : data[0].data;
@@ -791,14 +840,14 @@ export default {
     addinfoFileUrl(val){
       //选择背景
       if(this.infoActionType=="bj"){
-        this.datalist[0].barg=val.fileUrl;
-        this.datalist[0].color="";
+        this.datalist[0].bargImg=val.fileUrl;
+        this.datalist[0].bargColor="";
       }
       //添加图片
       else if(this.infoActionType=="addImg"){
-        let size=this.datalist.length;
+        const size=this.datalist.length;
         this.datalist[size-1].src=val.fileUrl;
-         let id=this.generateUUID();
+         const id=this.generateUUID();
         this.datalist[size-1].fileList.push(
           {
                 id:id,
@@ -809,18 +858,18 @@ export default {
       }
       //添加视频
       else if(this.infoActionType=="addVideo"){
-        let size=this.datalist.length;
+        const size=this.datalist.length;
         this.datalist[size-1].src=val.fileUrl;
         this.datalist[size-1].videoImg=val.videoImg;
       }
       //添加当前图片列表
       else if(this.infoActionType=="addImgList"){
-         let id=this.activateData.id;
-         let date=this.datalist;
+         const id=this.activateData.id;
+         const date=this.datalist;
          let a=0;
          for(let item of date){
             if(item.id==id){
-              let id=this.generateUUID();
+              const id=this.generateUUID();
               this.datalist[a].fileList.push(
                 {
                         id:id,
@@ -858,22 +907,22 @@ export default {
       },
      //修改背景图片颜色 
      updateBargColor(val){
-        this.datalist[0].color=val;
-        this.datalist[0].barg='';
+        this.datalist[0].bargColor=val;
+        this.datalist[0].bargImg='';
         this.editorBarg.color=val;
      }, 
      elUpdateColor(){
-        if( this.datalist[0].barg==''){
-        this.datalist[0].color=this.editorBarg.color;
-        this.datalist[0].barg='';
+        if( this.datalist[0].bargImg==''){
+        this.datalist[0].bargColor=this.editorBarg.color;
+        this.datalist[0].bargImg='';
         }
      },
     //----------- 背景图操作监听end
     //-----------文字修改
     //修改字体颜色
     updateTextColor(val){
-        let id=this.activateData.id;
-        let date=this.datalist;
+        const id=this.activateData.id;
+        const date=this.datalist;
         let a=0;
         for(let item of date){
           if(item.id==id){
@@ -886,8 +935,8 @@ export default {
         }
     },
     elUpdateTextColor(){
-        let id=this.activateData.id;
-        let date=this.datalist;
+        const id=this.activateData.id;
+        const date=this.datalist;
         let a=0;
         for(let item of date){
           if(item.id==id){
@@ -900,13 +949,13 @@ export default {
     },
     //修改字体背景颜色
     updateTextBargColor(val){
-        let id=this.activateData.id;
-        let date=this.datalist;
+        const id=this.activateData.id;
+        const date=this.datalist;
         let a=0;
         for(let item of date){
           if(item.id==id){
-             this.datalist[a].color=val;
-             this.activateData.color=val;
+             this.datalist[a].bargColor=val;
+             this.activateData.bargColor=val;
              this.editorText.bargColor=val;
              break;
           }
@@ -914,13 +963,13 @@ export default {
         }
     },
     elUpdateTextBargColor(){
-        let id=this.activateData.id;
-        let date=this.datalist;
+        const id=this.activateData.id;
+        const date=this.datalist;
         let a=0;
         for(let item of date){
           if(item.id==id){
-             this.datalist[a].color=this.editorText.bargColor;
-             this.activateData.color=this.editorText.bargColor;
+             this.datalist[a].bargColor=this.editorText.bargColor;
+             this.activateData.bargColor=this.editorText.bargColor;
              break;
           }
           a++;
@@ -928,8 +977,8 @@ export default {
     },
     //修改字体大小
     editorTextSize(){
-        let id=this.activateData.id;
-        let date=this.datalist;
+        const id=this.activateData.id;
+        const date=this.datalist;
         let a=0;
         for(let item of date){
           if(item.id==id){
@@ -942,10 +991,10 @@ export default {
     },
     //修改走马灯效果
     editorTextMarquee(){
-        let id=this.activateData.id;
-        let date=this.datalist;
+        const id=this.activateData.id;
+        const date=this.datalist;
         let a=0;
-        let marqueeType=this.editorText.marqueeType;
+        const marqueeType=this.editorText.marqueeType;
         for(let item of date){
           if(item.id==id){
              this.datalist[a].marqueeType=this.editorText.marqueeType;
@@ -966,8 +1015,8 @@ export default {
     },
     //修改滚动速度
     editorTextSpeed(){
-        let id=this.activateData.id;
-        let date=this.datalist;
+        const id=this.activateData.id;
+        const date=this.datalist;
         let a=0;
         for(let item of date){
           if(item.id==id){
@@ -990,7 +1039,7 @@ export default {
        if(val.type!="bj"){
       this.activateData=val;
       this.activate=true;
-        if(val.type=="text"){
+       if(val.type=="text"){
           this.editorText.marqueeType=val.marqueeType;
           this.editorText.color=val.textColor;
           this.editorText.bargColor=val.bargColor;
@@ -1023,7 +1072,7 @@ export default {
        if(val.type=="text"){
         this.activateData.drag=true;
         this.activateData.textReadonly=true;
-        let date=this.datalist;
+        const date=this.datalist;
           let a=0;
            for(let item of date) {
                   if(item.id==val.id){
@@ -1080,14 +1129,16 @@ export default {
             this.infoEditor.height='540px'
             this.datalist[0].w=960;
             this.datalist[0].h=540;
-            this.infoType="16:9"
+            this.infoTypeName="16:9";
+            this.infoType="0";
         }else{
             //2.5倍
             this.infoEditor.width='432px';
             this.infoEditor.height='768px';
             this.datalist[0].w=432;
             this.datalist[0].h=768;
-             this.infoType="9:16"
+            this.infoTypeName="9:16";
+            this.infoType="1";
         }
         this.infoNameDialog=true;
     },
@@ -1127,6 +1178,7 @@ export default {
 .infoEditorHome .editorHome .editorDiv{
     display: inline-block;
     position: relative;
+   
 }
 .infoEditorHome .editorHome .editor{
     display: inline-block;
@@ -1139,7 +1191,7 @@ export default {
 .infoEditorHome .editorHome .toolHome{
   vertical-align: top;
   display: inline-block;
-  margin-top: 18px;
+  
 }
 .infoEditorHome .editorHome .toolHome .toolList{
   margin-top: 0px;
@@ -1151,7 +1203,7 @@ export default {
 .infoEditorHome .editorHome .toolEditor{
   vertical-align: top;
   display: inline-block;
-  margin-top: 18px;
+ 
 }
 .infoEditorHome .editorHome .toolEditor .editorList{
   margin-top: 0px;
@@ -1183,7 +1235,6 @@ export default {
   }
   .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
-    
   }
   .avatar-uploader-icon {
     font-size: 28px;

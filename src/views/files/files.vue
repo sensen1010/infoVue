@@ -36,9 +36,9 @@
        <el-radio-group v-model="fileTypeId"  size="small" @change="clickFileTypeId">
       <el-radio-button label="全部"></el-radio-button>
       <el-radio-button label="图片"></el-radio-button>
-      <el-radio-button label="文档"></el-radio-button>
+      <!-- <el-radio-button label="文档"></el-radio-button> -->
       <el-radio-button label="视频"></el-radio-button>
-      <el-radio-button label="音乐"></el-radio-button>
+      <!-- <el-radio-button label="音乐"></el-radio-button> -->
     </el-radio-group>
       <el-row v-if="showType">
         <el-col :span="3" v-for="file in tableData" :key="file.id" style="font-size: 14px;">
