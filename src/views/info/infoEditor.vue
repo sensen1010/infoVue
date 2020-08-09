@@ -69,7 +69,6 @@
                     <li><el-button @click="addTool('img')" >图片</el-button></li>
                     <li><el-button @click="addTool('video')">视频</el-button></li>
                      <li><el-button @click="addTool('time')">时间</el-button></li>
-                     
                   </ul>
                  </div>
                  <div class="editorDiv"  ref="editorDiv">
@@ -92,7 +91,8 @@
                                     @refLineParams="getRefLineParams"
                                     @resizing="onResize"
                                     @dragging="onDrag"
-                                    :style='"background-color:"+item.bargColor'
+                                    :style='"user-select:text;background-color:"+item.bargColor'
+                                    
                                      >
                                     <div v-if="item.type=='bj'&&item.bargImg!=''" :style='"background-image:url("+showFileUrl+item.bargImg+");background-repeat:no-repeat;background-size:cover;width:100%;height:100%;"'></div>
                                     <div v-if="item.type=='bj'&&item.bargColor!=''" :style='"background:"+item.bargColor+";background-size:100% 100%;width:100%;height:100%;"'></div>
@@ -106,12 +106,14 @@
                                     {{item.context}}
                                     </p>
                                     <textarea  v-if="item.type=='text'&&!item.marquee"  @dblclick="editorTextClick(item)" 
-                                    :readonly="item.textReadonly"
+                                   
+                                    :readonly="item.textReadonly ?'readonly':false"
                                      v-model="item.context"
                                      v-text="item.context"
                                     :style='"background-color:transparent;font-size:"+item.size
                                     +";text-align:"+item.textAlign+
-                                    ";color:"+item.textColor+";outline:none;border:0;width:100%;height:100%;resize: none;overflow-y:hidden"' 
+                                    ";color:"+item.textColor+";outline:none;border:0;width:100%;height:100%;resize: none;overflow-y:hidden;"' 
+                              
                                     >
                                     </textarea>
                                     <marquee v-if="item.type=='text'&&item.marquee" 
@@ -455,8 +457,43 @@ export default {
     };
   },
   //页面加载
-  created() {},
+  created() {
+      const proId= this.$route.query.p;
+      const name= this.$route.query.n;
+      if(proId!=null&&name!=null){
+        this.initUpdate(proId,name);
+      }
+  },
   methods: {
+    //若是编辑节目
+    initUpdate(proId,name){
+      this.infoId=proId;
+      this.infoName=name;
+      this.showEditor=false;
+      let updateInfo=localStorage.getItem("updateInfo");
+      let allDate=JSON.parse(updateInfo);
+      let layoutType=allDate.layoutType;
+      let data=allDate.content;
+      this.datalist=[];
+      this.datalist=JSON.parse(data);
+      this.activateData=this.datalist[0];
+      this.editorBarg.color=this.activateData.bargColor;
+      this.editorBarg.url=this.activateData.bargImg;
+      if(layoutType=="0"){
+            //2倍
+            this.infoEditor.width='960px';
+            this.infoEditor.height='540px'
+            this.infoTypeName="16:9";
+            this.infoType="0";
+        }else{
+            //2.5倍
+            this.infoEditor.width='432px';
+            this.infoEditor.height='768px';
+            this.infoTypeName="9:16";
+            this.infoType="1";
+        }
+
+    },
     //保存节目按钮
     saveInfoClick(){
       const proId=this.infoId;
@@ -1032,6 +1069,16 @@ export default {
       if(val.type=="text"){
         this.activateData.drag=false;
         this.activateData.textReadonly=false;
+        // let date=this.datalist;
+        // let a=0;
+        //    for(let item of date) {
+        //           if(item.id==val.id){
+        //             this.datalist[a].drag=false;
+        //             this.datalist[a].textReadonly=false;
+        //             break;
+        //           }
+        //           a++;
+        //   }
       }
     },
     //onActivated，选中时

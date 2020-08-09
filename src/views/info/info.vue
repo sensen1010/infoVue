@@ -51,7 +51,7 @@
           <el-table-column fixed="right" label="操作" width="120">
             <template slot-scope="scope">
               <el-button @click="infoReleaseClick(scope.row)" type="text" size="small">发布</el-button>
-              <el-button type="text" size="small">修改</el-button>
+              <el-button @click="updateInfoBtn(scope.row)" type="text" size="small">修改</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -101,7 +101,22 @@ export default {
     //制作节目跳转
     addInfoBtn() {
       let routeUrl = this.$router.resolve({
+        path: "/infoEditor"
+      });
+      //打开新页面
+      window.open(routeUrl.href, "_blank");
+    },
+    //修改节目跳转
+    updateInfoBtn(val) {
+      localStorage.setItem("updateInfo",JSON.stringify(val));  
+      const name=val.name;
+      const proId=val.proId;
+      let routeUrl = this.$router.resolve({
         path: "/infoEditor",
+        query:{//要传的参数
+          n:name,
+          p:proId
+        }
       });
       //打开新页面
       window.open(routeUrl.href, "_blank");

@@ -4,19 +4,19 @@
      <el-menu :default-active="hostsIndex" 
      class="el-menu-demo el-menu-host" mode="horizontal" @select="handleSelect">
   <el-menu-item  index="0">所有设备</el-menu-item>
-  <el-menu-item  index="1">禁用</el-menu-item >
-  <el-menu-item  index="2">回收站</el-menu-item>
+  <!-- <el-menu-item  index="1">禁用</el-menu-item >
+  <el-menu-item  index="2">回收站</el-menu-item> -->
   <el-menu-item  class="el-menu-hostInput">
     <div>
       <el-input size="mini" placeholder="主机名" v-model="selectName" >
     </el-input><el-button type="primary" size="mini" @click="onSubmit">查询</el-button>
       </div>
     </el-menu-item>  
-   <el-menu-item style="float:right">
+   <!-- <el-menu-item style="float:right">
     <el-button type="primary" size="small"  @click="addHostShowDialog= true">
             添加设备
     </el-button>
-    </el-menu-item>
+    </el-menu-item> -->
   </el-menu>
   </el-header>
 
@@ -188,13 +188,15 @@ export default {
       },
       //查询客户端
       selectHosts(){
+         const enterId = localStorage.getItem("enterId");
         let formData=new FormData();
         formData.append("hostName",this.selectName);
-        formData.append("hostState",this.hostsIndex);
+        formData.append("state",this.hostsIndex);
         formData.append("linkState","");
+        formData.append("enterId",enterId);
         formData.append("page",this.currentPage-1);
         console.log(formData);
-        this.$axios.post(this.GLOBAL.serverSrc+'/host/select',formData).then(res=> {
+        this.$axios.post(this.GLOBAL.serverSrc+'/host/userSelect',formData).then(res=> {
               console.log(res.data.data);//数据先转换格式
               let data = JSON.parse(res.data.data);
             //  var data= typeof age=='string'?JSON.parse(res.data.data):res.data.data;
