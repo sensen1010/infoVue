@@ -23,6 +23,10 @@
         <span slot="title">节目管理</span>
       </el-menu-item>
       <el-menu-item index="8">
+        <i class="el-icon-edit-outline"></i>
+        <span slot="title">发布历史</span>
+      </el-menu-item>
+      <el-menu-item index="9">
         <i class="el-icon-video-camera-solid"></i>
         <span slot="title">退出登录</span>
       </el-menu-item>
@@ -59,7 +63,7 @@
             this.$router.push('/Main/Users');
          }
          else if(num=="2"){
-           this.active="3";
+            this.active="3";
             this.$router.push('/Main/Files');
          }
          else{
@@ -98,6 +102,9 @@
                        this.$router.push('/Main/Info');
                        break;
                        case '8':
+                       this.$router.push('/Main/InfoHistory');
+                       break;
+                        case '9':
                        this.$router.push('/login');
                        break;
                    }

@@ -844,7 +844,7 @@ export default {
     //查询文件
     selectFileList(){
         const num= localStorage.getItem("userNum");
-        let url="";
+        let url="/file/fileList";
         const enterId=localStorage.getItem("enterId");
         const userId=localStorage.getItem("userId");
         if(num=="1"){

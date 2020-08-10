@@ -42,7 +42,7 @@
     </el-radio-group>
       <el-row v-if="showType">
         <el-col :span="3" v-for="file in tableData" :key="file.id" style="font-size: 14px;">
-          <el-card id="el-file-card" :body-style="{ padding: '0px' }" shadow="hover">
+          <el-card id="el-file-card" :body-style="{ padding: '0px' }"  shadow="hover" >
             <img :src='showFileUrl+"/"+file.fileUrl' class="image"  style="height:140px;width:100%"
              v-if="file.fileTypeId=='1'"
             />
@@ -56,6 +56,7 @@
             <div class="file-name">
               <span>{{file.fileName}}</span>
             </div>
+            <span>X</span>
           </el-card>
         </el-col>
       </el-row>
@@ -125,6 +126,10 @@
     </el-main>
     <!-- 上传文件 -->
     <el-dialog title="上传文件" :visible.sync="addFileShowDialog">
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addFileShowDialog = false">取 消</el-button>
+        <el-button type="primary" @click="submitUpload">确 定</el-button>
+      </div>
       <el-form :model="form">
         <el-upload
           class="upload-demo"
@@ -147,10 +152,6 @@
           <div class="el-upload__tip" slot="tip">只能上传jpg/png/mp4文件</div>
         </el-upload>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addFileShowDialog = false">取 消</el-button>
-        <el-button type="primary" @click="submitUpload">确 定</el-button>
-      </div>
     </el-dialog>
   </el-container>
 </template>
@@ -212,9 +213,10 @@ export default {
       }
     },
     handleSelectionChange(val) {
+      console.log(val);
       //获取全选
-      console.log(this.$refs.multipleTable.selection[0].name);
-      alert(val.selectName);
+      console.log(this.$refs.multipleTable.selection[0]);
+     
       this.multipleSelection = val;
     },
     //点击上传按钮，清空文件列

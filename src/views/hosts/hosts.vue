@@ -78,9 +78,7 @@
       label="操作"
       >
       <template slot-scope="scope">
-        <el-button @click="hostClickOk(scope.row)" type="text" size="small" v-if="okBtnShow">恢复</el-button>
-        <el-button @click="hostClickDis(scope.row)" type="text" size="small" v-if="disBtnShow">禁用</el-button>
-        <el-button @click="hostClickNo(scope.row)" type="text" size="small" v-if="noBtnShow">删除</el-button>
+        <el-button @click="hostClickDis(scope.row)" type="text" size="small">发布节目</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -118,9 +116,6 @@
 export default {
      data() {
       return {
-        noBtnShow:true,
-        okBtnShow:false,
-        disBtnShow:true,
         addHostShowDialog:false,
         pageSize:10,
         pagetotal:0,
@@ -207,15 +202,8 @@ export default {
              console.log(error);
            });
       },
-      //修改主机可用状态
-      hostClickOk(val){
-        this.updateHostState(val.hostId,"0");
-      },
       hostClickDis(val){
         this.updateHostState(val.hostId,"1");
-      },
-      hostClickNo(val){
-        this.updateHostState(val.hostId,"2");
       },
       updateHostState(hostId,state){
         let formData=new FormData();
@@ -242,21 +230,6 @@ export default {
         this.currentPage=1;
          this.hostsIndex=keyPath+"";
          this.selectHosts(); 
-         if(keyPath==0){
-            this.okBtnShow=false;
-            this.noBtnShow=true;
-            this.disBtnShow=true;
-        }
-        if(keyPath==1){
-           this.okBtnShow=true;
-            this.noBtnShow=true;
-            this.disBtnShow=false;
-        }
-        if(keyPath==2){
-            this.okBtnShow=true;
-            this.noBtnShow=false;
-            this.disBtnShow=true;
-        }
         }
          
 

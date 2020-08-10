@@ -7,6 +7,7 @@ const HostsAdmin = () => import('../views/hosts/hostsAdmin.vue')
 const Files = () => import('../views/files/files.vue')
 const News = () => import('../views/news/newsCore.vue')
 const Info = () => import('../views/info/info.vue')
+const InfoHistory = () => import('../views/info/infoHistory.vue')
 const InfoEditor = () => import('../views/info/infoEditor.vue')
 const Enter = () => import('../views/enterprise/enterprise.vue')
 const Login = () => import('../views/login/login.vue')
@@ -111,6 +112,17 @@ Vue.use(VueRouter)
       components:{
         default:Info,
         'mianView':Info
+      }
+    },
+    {
+      path:"InfoHistory",
+      name:'InfoHistory',
+      meta:{
+        title:"发布历史"
+      },
+      components:{
+        default:InfoHistory,
+        'mianView':InfoHistory
       }
     },
     {
