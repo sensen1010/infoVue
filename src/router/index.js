@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import axios from 'axios'
+import global_ from '../components/GLOBAL.vue'//引用文件
 const Main = () => import('../views/main/main.vue')
 const Users = () => import('../views/users/users.vue')
 const Hosts = () => import('../views/hosts/hosts.vue')
@@ -157,6 +159,20 @@ router.beforeEach((to,from,next) => {
     if (to.path === '/login') {
       next()
     }
+    axios.defaults.headers.common["token"] = token;
+    axios
+    .post(global_.serverSrc+"/token/token")
+    .then(res => {
+      // console.log(JSON.parse(res.data));//数据先转换格式
+      if (res.data.code == "0") { 
+      next()
+      } else {
+      next('/login')
+      }
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
     next()
   } else {
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入

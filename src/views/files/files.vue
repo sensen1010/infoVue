@@ -63,6 +63,7 @@
       <el-table
         ref="multipleTable"
         border
+         size="mini"
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
@@ -74,6 +75,7 @@
         <el-table-column prop="fileMd5" label="md5"></el-table-column>
         <el-table-column prop="fileName" label="名称"></el-table-column>
         <el-table-column prop="fileType" label="文件类型"></el-table-column>
+         <el-table-column prop="fileSize" label="文件大小"></el-table-column>
         <el-table-column prop="creationTime" label="添加时间"></el-table-column>
         <el-table-column prop="fileUrl" label="文件">
           <template slot-scope="scope">
@@ -94,7 +96,6 @@
                controls="controls"
                v-else-if="scope.row.fileTypeId=='3'"
             />
-            
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="120">

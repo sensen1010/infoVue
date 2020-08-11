@@ -1,7 +1,11 @@
 <template>
   <el-container style="height: 1080px; border: 1px solid #eee">
-    <el-menu :default-active="active" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"  @select="handleSelect">
-     <img   style="width: 100px; height: 100px"/>
+    <el-menu :default-active="active" class="el-menu-vertical-demo info-menu"
+     @open="handleOpen" @close="handleClose"  @select="handleSelect"
+     text-color="#ffffff"
+     background-color="#2F4260"
+     >
+     <img style="width: 100px; height: 100px;margin-top:10px;"/>
       <el-menu-item index="1" v-if="userType=='0'">
         <i class="el-icon-user"></i>
         <span slot="title">企业管理</span>
@@ -32,7 +36,7 @@
       </el-menu-item>
     </el-menu>
     <el-container>
-      <el-main>
+      <el-main class="info-main">
         <keep-alive>
         <router-view name="mianView">
         </router-view>
@@ -78,6 +82,7 @@
              console.log(key, keyPath);
            },
             handleSelect(key, keyPath){
+               const num= localStorage.getItem("userNum");
                 console.log(keyPath);
                    switch(key){
                      case '1':
@@ -93,7 +98,11 @@
                        this.$router.push('/Main/News');
                        break;
                      case '5':
-                       this.$router.push('/Main/Hosts');
+                       if(num=='0'){
+                         this.$router.push('/Main/Hosts'); 
+                       }else{
+                         this.$router.push('/Main/Hosts');
+                       }
                        break;
                      case '6':
                        this.$router.push('/Main/HostsAdmin');
@@ -123,5 +132,11 @@
 
     .el-aside {
       color: #333;
+    }
+    .info-menu{
+      background-color: #2F4260;
+    }
+    .info-main{
+      padding: 0px!important;
     }
 </style>

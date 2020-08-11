@@ -3,7 +3,8 @@
 
   <el-header>
   <el-menu :default-active="userIndex" 
-     class="el-menu-demo el-menu-host" mode="horizontal" @select="handleSelect">
+     class="el-menu-demo el-menu-host" mode="horizontal" @select="handleSelect"
+     >
   <el-menu-item  index="0">所有用户</el-menu-item>
   <el-menu-item  index="1">黑名单</el-menu-item >
   <el-menu-item  class="el-menu-hostInput">
@@ -37,11 +38,7 @@
     size="mini"
      tooltip-effect="dark"
     style="width: 100%"
-    @selection-change="handleSelectionChange">
-    <el-table-column
-      type="selection"
-      width="55">
-    </el-table-column>
+    >
    <el-table-column
       prop="id"
       label="id"
@@ -129,17 +126,17 @@
 </el-dialog>
 <!-- 修改用户 -->
 <el-dialog title="修改信息" :visible.sync="updateUserShowDialog" width="20%">
-  <el-form :model="formUp">
-    <el-form-item label="账号">
-      {{formUp.no}}
-    </el-form-item>
-    <el-form-item label="密码" >
-     <el-input v-model="formUp.pow" autocomplete="on" type="password"></el-input>
-    </el-form-item>
-    <el-form-item label="用户id" >
-        {{formUp.userId}}
-    </el-form-item>
-  </el-form>
+<el-form ref="form" :model="formUp" size="mini">
+  <el-form-item label="用户id">
+     {{formUp.userId}}
+  </el-form-item>
+  <el-form-item label="名称">
+    {{formUp.name}} ({{formUp.no}})
+  </el-form-item>
+  <el-form-item label="新密码">
+    <el-input  v-model="formUp.pow" type="password"></el-input>
+  </el-form-item>
+</el-form>
   <div slot="footer" class="dialog-footer">
     <el-button @click="updateUserShowDialog = false">取 消</el-button>
     <el-button type="primary" @click="updateUser">确 定</el-button>
@@ -176,6 +173,7 @@ export default {
         },
         formUp:{
           no:'',
+          name:'',
           pow:'',
           userId:'',
           id:'',
@@ -198,11 +196,6 @@ export default {
         } else {
           this.$refs.multipleTable.clearSelection();
         }
-      },
-      handleSelectionChange(val) {
-         //获取全选
-        console.log(this.$refs.multipleTable.selection[0].name);
-        this.multipleSelection = val;
       },
       //企业下拉列表选中
       selectClick(){
@@ -236,7 +229,12 @@ export default {
       },
       //修改用户
       updateUser(){
-         let formData=new FormData();
+        const pow=this.formUp.pow;
+        if(pow==null||pow==""){
+          this.$message.error('不能为空');
+          return;
+        }
+        let formData=new FormData();
         formData.append("id",this.formUp.id);
         formData.append("pow",this.formUp.pow);
        // alert(this.currentPage);
@@ -244,7 +242,6 @@ export default {
               if(res.data.code==0){
                 this.selectUser(); 
               }
-              alert(res.data.msg);
               this.updateUserShowDialog=false;
            }).catch(function (error) {
         this.updateUserShowDialog=false;
@@ -253,7 +250,8 @@ export default {
       },
       userClickUpdate(val){
         this.formUp.id=val.id
-        this.formUp.no=val.no;
+        this.formUp.no=val.userName;
+        this.formUp.name=val.name;
         this.formUp.userId=val.userId;
         this.updateUserShowDialog=true;
       },

@@ -456,6 +456,21 @@ export default {
             ]
     };
   },
+  //刷新时提示
+  mounted() {
+      window.onbeforeunload = function (e) {
+          e = e || window.event;
+          // 兼容IE8和Firefox 4之前的版本
+          if (e) {
+              e.returnValue = '关闭提示';
+          }
+          // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+          return '关闭提示';
+      }
+  },
+  destroyed() {
+        window.onbeforeunload = null
+  },
   //页面加载
   created() {
       const proId= this.$route.query.p;
@@ -1208,7 +1223,7 @@ export default {
 
 .infoEditorHome .editor-header{
     width: 100%;
-    background: #E0DEE0;
+    background: #2F4260;
     line-height: 60px;
 }
  

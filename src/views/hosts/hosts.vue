@@ -27,11 +27,7 @@
     :data="tableData"
     tooltip-effect="dark"
     style="width: 100%"
-    @selection-change="handleSelectionChange">
-    <el-table-column
-      type="selection"
-      width="55">
-    </el-table-column>
+    >
    <el-table-column
       prop="id"
       label="id"
@@ -150,11 +146,6 @@ export default {
         } else {
           this.$refs.multipleTable.clearSelection();
         }
-      },
-      handleSelectionChange(val) {
-         //获取全选
-        console.log(this.$refs.multipleTable.selection[0].name);
-        this.multipleSelection = val;
       },
       selectClick(){
         this.selectHosts();
