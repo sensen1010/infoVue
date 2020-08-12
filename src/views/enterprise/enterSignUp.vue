@@ -81,7 +81,14 @@ export default {
                 type: 'success'
               });
              this.$router.push('/Login');
-          } else if(res.data.code == "2"){
+          } 
+           else if(res.data.code == "3"){
+           this.$message({
+                message: '账号已注册',
+                type: 'warning'
+              });
+          }
+          else if(res.data.code == "2"){
            this.$message({
                 message: '只能注册一个企业',
                 type: 'warning'

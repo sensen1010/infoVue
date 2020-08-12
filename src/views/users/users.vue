@@ -74,8 +74,8 @@
       >
       <template slot-scope="scope">
         <el-button @click="userClickUpdate(scope.row)" type="text" size="small">修改</el-button>
-        <el-button @click="userClickNo(scope.row)" type="text" size="small" v-if="showUserClick">拉黑</el-button>
-        <el-button @click="userClickOk(scope.row)" type="text" size="small" v-else>恢复</el-button>
+        <el-button @click="userClickNo(scope.row)" type="text" size="small" v-if="showUserClick&&scope.row.userId!=userId">拉黑</el-button>
+        <el-button @click="userClickOk(scope.row)" type="text" size="small" v-else-if="scope.row.userId!=userId">恢复</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -148,6 +148,7 @@
 export default {
     data() {
       return {
+        userId:"",
         pageSize:10,
         pagetotal:0,
         userIndex: "0",
@@ -183,11 +184,16 @@ export default {
     },
     //页面加载
     created(){
+       this.thisUserId();
        this.selectUser();
        this.showEnterList();
      // this.convert();
     },
     methods: {
+      thisUserId(){
+         const userId= localStorage.getItem("userId");
+         this.userId=userId;
+      },
       toggleSelection(rows) {
         if (rows) {
           rows.forEach(row => {
@@ -234,11 +240,12 @@ export default {
           this.$message.error('不能为空');
           return;
         }
+        const userId=this.formUp.userId;
+        const enterId=localStorage.getItem("");
         let formData=new FormData();
-        formData.append("id",this.formUp.id);
         formData.append("pow",this.formUp.pow);
        // alert(this.currentPage);
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/update',formData).then(res=> {
+        this.$axios.patch(this.GLOBAL.serverSrc+'/users/users',formData).then(res=> {
               if(res.data.code==0){
                 this.selectUser(); 
               }
@@ -281,11 +288,11 @@ export default {
                 this.selectUser();
                 this.addUserShowDialog=false;
                 this.$message({
-                  message: res.data.msg,
+                  message: "添加成功",
                   type: 'success'
                 });
               }else{
-                 this.$message.error(res.data.msg);
+                 this.$message.error("添加失败");
               }
            }).catch(function (error) {
 
@@ -342,12 +349,18 @@ export default {
       },
       //恢复
       userClickOk(val){
-        let formData=new FormData();
-        formData.append("id",val.id);
-        formData.append("state","0");
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/update',formData).then(res=> {
+        const enterId=localStorage.getItem("enterId");
+        const userId=val.userId;
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.delete(this.GLOBAL.serverSrc+'/users/users/'+userId,
+        {params:{
+          enterId:enterId,
+          state:"0"
+        }}
+        ).then(res=> {
           if(res.data.code=="0"){
-  this.selectUser();
+             this.selectUser();
           }
             
            }).catch(function (error) {
@@ -357,16 +370,20 @@ export default {
       },
       //拉黑
       userClickNo(val){
-        let formData=new FormData();
-        formData.append("id",val.id);
-        formData.append("state","1");
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/update',formData).then(res=> {
+        const enterId=localStorage.getItem("enterId");
+        const userId=val.userId;
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.delete(this.GLOBAL.serverSrc+'/users/users/'+userId,
+        {params:{
+          enterId:enterId,
+          state:"1"
+        }}).then(res=> {
           if(res.data.code=="0"){
-        this.selectUser();
+           this.selectUser();
           }
            }).catch(function (error) {
-
-             console.log(error);
+          console.log(error);
       });
       },
       onSubmit(){ 

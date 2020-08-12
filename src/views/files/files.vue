@@ -101,16 +101,17 @@
         <el-table-column fixed="right" label="操作" width="120">
           <template slot-scope="scope">
             <el-button
-              @click="playerClickOk(scope.row)"
+              @click="fileClickNo(scope.row)"
               type="text"
               size="small"
               v-if="okBtnShow"
-            >通过</el-button>
+            >删除</el-button>
             <el-button
+            @click="fileClickOk(scope.row)"
               type="text"
               size="small"
-              v-if="noBtnShow"
-            >下载</el-button>
+              v-else
+            >恢复</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -161,12 +162,10 @@ export default {
   data() {
     return {
       fileTypeId:"全部",
-      showType: true,
+      showType: false,
       upFileUrl:this.GLOBAL.serverSrc,
       showFileUrl: this.GLOBAL.serverimg,
-      noBtnShow: true,
       okBtnShow: true,
-      auditNoMessageShow: false,
       addFileShowDialog: false,
       formLabelWidth: "120px",
       //企业列表选项
@@ -200,7 +199,6 @@ export default {
   created() {
     this.selectFile();
     this.showEnterList();
-    // this.showMatchItem();
     // this.convert();
   },
   methods: {
@@ -321,29 +319,23 @@ export default {
         this.selectFile();
         if (keyPath == 0) {
           this.okBtnShow = true;
-          this.noBtnShow = true;
-          this.auditNoMessageShow = false;
         }
         if (keyPath == 1) {
           this.okBtnShow = false;
-          this.noBtnShow = true;
-          this.auditNoMessageShow = false;
-        }
-        if (keyPath == 2) {
-          this.okBtnShow = true;
-          this.noBtnShow = false;
-          this.auditNoMessageShow = true;
         }
       }
     },
-    //通过
-    playerClickOk(val) {
-      let formData = new FormData();
-      formData.append("id", val.id);
-      formData.append("auditState", "1");
-      formData.append("auditNoMessage", "");
+    //删除文件
+    fileClickNo(val) {
+      const enterId=localStorage.getItem("enterId");
+      const fileUrlId=val.fileUrlId;
       this.$axios
-        .post(this.GLOBAL.serverSrc + "/plays/admin/update", formData)
+        .delete(this.GLOBAL.serverSrc + "/file/file/"+fileUrlId,
+        { params:{
+          enterId:enterId,
+          state:"1"
+        }}
+        )
         .then(res => {
           if (res.data.code == 0) {
             this.selectFile();
@@ -353,47 +345,27 @@ export default {
           console.log(error);
         });
     },
-    //不通过
-    playerClickNo(val) {
-      this.$prompt("请输入退回理由", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消"
-      })
-        .then(({ value }) => {
-          let formData = new FormData();
-          formData.append("id", val.id);
-          formData.append("auditState", "2");
-          formData.append("auditNoMessage", value + "");
-          this.$axios
-            .post(this.GLOBAL.serverSrc + "/plays/admin/update", formData)
-            .then(res => {
-              if (res.data.code == 0) {
-                this.selectFile();
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        })
-        .catch(() => {
-          //取消
-        });
-    },
-    onSubmit() {
-      this.selectFile();
-    },
-    showMatchItem() {
+    fileClickOk(val) {
+      const enterId=localStorage.getItem("enterId");
+      const fileUrlId=val.fileUrlId;
       this.$axios
-        .post(this.GLOBAL.serverSrc + "/mat/admin/matchList")
+        .delete(this.GLOBAL.serverSrc + "/file/file/"+fileUrlId,
+        { params:{
+          enterId:enterId,
+          state:"0"
+        }}
+        )
         .then(res => {
           if (res.data.code == 0) {
-            this.options = JSON.parse(res.data.data); //表数据
-            console.log(res.data.data);
+            this.selectFile();
           }
         })
         .catch(function(error) {
           console.log(error);
         });
+    },
+    onSubmit() {
+      this.selectFile();
     },
     submitUpload() {
       this.mydata.enterId=localStorage.getItem("enterId");

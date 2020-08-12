@@ -170,32 +170,33 @@ const router = new VueRouter({
   // base: "dist",
   routes
 })
-const whiteList = ['/login']
+const whiteList = ['/login','/EnterSignUp']
 router.beforeEach((to,from,next) => {
   //设置标题
  // document.title=to.matched[0].meta.title;无效
   document.title=to.meta.title;
   const token= localStorage.getItem("token");
   if (token!==null&&token!="") {
-    if (to.path === '/login') {
+    if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
+      next()
+    }else{
+      axios.defaults.headers.common["token"] = token;
+      axios
+      .post(global_.serverSrc+"/token/token")
+      .then(res => {
+         console.log(res);//数据先转换格式
+        if (res.data.code == "0") { 
+        next()
+        } 
+        else {
+        next('/login')
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
       next()
     }
-    axios.defaults.headers.common["token"] = token;
-    axios
-    .post(global_.serverSrc+"/token/token")
-    .then(res => {
-       console.log(res);//数据先转换格式
-      if (res.data.code == "0") { 
-      next()
-      } 
-      else {
-      next('/login')
-      }
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
-    next()
   } else {
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
       next()
