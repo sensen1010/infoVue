@@ -241,15 +241,25 @@ export default {
           return;
         }
         const userId=this.formUp.userId;
-        const enterId=localStorage.getItem("");
+        const enterId=localStorage.getItem("enterId");
         let formData=new FormData();
-        formData.append("pow",this.formUp.pow);
-       // alert(this.currentPage);
-        this.$axios.patch(this.GLOBAL.serverSrc+'/users/users',formData).then(res=> {
-              if(res.data.code==0){
+        formData.append("pow",pow);
+        formData.append("enterId",enterId);
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.patch(this.GLOBAL.serverSrc+'/users/users/'+userId,formData).then(res=> {
+             console.log(res);
+             if(res.data.code==0){
                 this.selectUser(); 
+                 this.updateUserShowDialog=false;
+                 this.$message({
+                  message: "修改成功",
+                  type: 'success'
+                });
+              }else{
+                 this.$message.error("修改失败"); 
               }
-              this.updateUserShowDialog=false;
+             
            }).catch(function (error) {
         this.updateUserShowDialog=false;
              console.log(error);
