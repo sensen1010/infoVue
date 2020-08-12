@@ -137,6 +137,9 @@ export default {
        this.selectHosts();
      // this.convert();
     },
+    activated() {
+      console.log('我这个页面显示就会执行');
+    },
     methods: {
       toggleSelection(rows) {
         if (rows) {
