@@ -3,7 +3,7 @@
     <el-menu :default-active="active" class="el-menu-vertical-demo info-menu"
      @open="handleOpen" @close="handleClose"  @select="handleSelect"
      text-color="#ffffff"
-     background-color="#2F4260"
+    
      >
      <img style="width: 100px; height: 100px;margin-top:10px;"/>
       <el-menu-item index="1" v-if="userType=='0'">
@@ -30,7 +30,11 @@
         <i class="el-icon-edit-outline"></i>
         <span slot="title">发布历史</span>
       </el-menu-item>
-      <el-menu-item index="9">
+       <el-menu-item index="9">
+        <i class="el-icon-edit-outline"></i>
+        <span slot="title">软件更新</span>
+      </el-menu-item>
+      <el-menu-item index="10">
         <i class="el-icon-video-camera-solid"></i>
         <span slot="title">退出登录</span>
       </el-menu-item>
@@ -114,6 +118,9 @@
                        this.$router.push('/Main/InfoHistory');
                        break;
                         case '9':
+                       this.$router.push('/Main/Update');
+                       break;
+                        case '10':
                        this.$router.push('/login');
                        break;
                    }
@@ -134,7 +141,12 @@
       color: #333;
     }
     .info-menu{
-      background-color: #2F4260;
+      background: -moz-linear-gradient(top, #1F313C 0%, #476374 80%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1F313C), color-stop(80%,#476374));
+    background: -webkit-linear-gradient(top, #1F313C 0%,#476374 80%);
+    background: -o-linear-gradient(top, #1F313C 0%,#476374 80%);
+    background: -ms-linear-gradient(top, #1F313C 0%,#476374 80%);
+    background: linear-gradient(to bottom, #1F313C 0%,#476374 80%);
     }
     .info-main{
       padding: 0px!important;

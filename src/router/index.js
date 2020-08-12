@@ -12,7 +12,9 @@ const Info = () => import('../views/info/info.vue')
 const InfoHistory = () => import('../views/info/infoHistory.vue')
 const InfoEditor = () => import('../views/info/infoEditor.vue')
 const Enter = () => import('../views/enterprise/enterprise.vue')
+const EnterSignUp = () => import('../views/enterprise/enterSignUp.vue')
 const Login = () => import('../views/login/login.vue')
+const Update = () => import('../views/update/softwareUpdate.vue')
 
 //解决路由重复报错问题
 const originalPush = VueRouter.prototype.push
@@ -40,6 +42,14 @@ Vue.use(VueRouter)
       component: InfoEditor,
       meta:{
         title: "节目编辑"
+      }
+    },
+    {
+      path:"/EnterSignUp",
+      name:'EnterSignUp',
+      component:EnterSignUp,
+      meta:{
+        title:"企业注册"
       }
     },
   {
@@ -137,6 +147,17 @@ Vue.use(VueRouter)
         default:Enter,
         'mianView':Enter
       }
+    },
+    {
+      path:"Update",
+      name:'Update',
+      meta:{
+        title:"软件更新"
+      },
+      components:{
+        default:Update,
+        'mianView':Update
+      }
     }
   
   ]
@@ -163,10 +184,11 @@ router.beforeEach((to,from,next) => {
     axios
     .post(global_.serverSrc+"/token/token")
     .then(res => {
-      // console.log(JSON.parse(res.data));//数据先转换格式
+       console.log(res);//数据先转换格式
       if (res.data.code == "0") { 
       next()
-      } else {
+      } 
+      else {
       next('/login')
       }
     })

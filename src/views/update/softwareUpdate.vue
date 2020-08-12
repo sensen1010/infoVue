@@ -8,7 +8,7 @@
 <el-card class="box-card">
   <div slot="header" class="clearfix">
     <span>登录</span>
-    <el-button style="float: right; padding: 3px 0" type="text" @click="enterSignUp()">企业注册</el-button>
+    <el-button style="float: right; padding: 3px 0" type="text">企业注册</el-button>
   </div>
   <el-form ref="form" :model="form" label-width="80px">
   <el-form-item label-width="0">
@@ -57,14 +57,7 @@ export default {
             localStorage.setItem("userId",redata.userId); 
             localStorage.setItem("enterId",redata.enterId);
             this.$router.push('/Main'); 
-          } 
-          else if(res.data.code == "2"){
-            this.$message({
-                message: '使用已过时',
-                type: 'warning'
-              });
-          }
-          else {
+          } else {
              this.$message({
                 message: '登录失败',
                 type: 'warning'
@@ -78,22 +71,20 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
-        },
-        enterSignUp(){
-          this.$router.push('/EnterSignUp');
-        },
+        }
     }
 }
 </script>
 <style>
 .loginDiv{
+
     height: 1080px;
-    background: -moz-linear-gradient(top, #1F313C 0%, #476374 80%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1F313C), color-stop(80%,#476374));
-    background: -webkit-linear-gradient(top, #1F313C 0%,#476374 80%);
-    background: -o-linear-gradient(top, #1F313C 0%,#476374 80%);
-    background: -ms-linear-gradient(top, #1F313C 0%,#476374 80%);
-    background: linear-gradient(to bottom, #1F313C 0%,#476374 80%);
+    background: -moz-linear-gradient(top, #050D1D 0%, #2F4260 80%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#000000), color-stop(80%,#2F4260));
+    background: -webkit-linear-gradient(top, #000000 0%,#2F4260 80%);
+    background: -o-linear-gradient(top, #000000 0%,#2F4260 80%);
+    background: -ms-linear-gradient(top, #000000 0%,#2F4260 80%);
+    background: linear-gradient(to bottom, #000000 0%,#2F4260 80%);
 }
 .loginDiv .loginfrom{
     padding-top: 10%;

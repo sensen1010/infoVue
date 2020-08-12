@@ -39,6 +39,11 @@
       >
     </el-table-column>
     <el-table-column
+      prop="enterTime"
+      label="到期时间"
+      >
+    </el-table-column>
+    <el-table-column
       prop="creationTime"
       label="添加时间"
       >
@@ -47,9 +52,9 @@
       label="操作"
       >
       <template slot-scope="scope">
-        <el-button @click="userClickUpdate(scope.row)" type="text" size="small">修改</el-button>
-        <el-button @click="enterClickNo(scope.row)" type="text" size="small" v-if="showUserClick">拉黑</el-button>
-        <el-button @click="enterClickOk(scope.row)" type="text" size="small" v-else>恢复</el-button>
+        <el-button @click="enterClickUpdate(scope.row)" type="text" size="small">修改</el-button>
+        <el-button @click="enterClickNo(scope.row)" type="text" size="small" v-if="showEnterClick&&scope.row.enterId!=enterId">拉黑</el-button>
+        <el-button @click="enterClickOk(scope.row)" type="text" size="small" v-else-if="scope.row.enterId!=enterId">恢复</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -67,13 +72,25 @@
   
   </el-main>
 <!-- 添加企业框 -->
-<el-dialog title="添加企业" :visible.sync="addEnterShowDialog">
-  <el-form :model="form">
-    <el-form-item label="姓名" >
-      <el-input v-model="form.userName" autocomplete="on"></el-input>
+<el-dialog title="添加企业" :visible.sync="addEnterShowDialog" width="30%">
+  <el-form :model="form" label-position="left" label-width="80px">
+    <el-form-item label="名称" >
+      <el-input v-model="form.enterName" autocomplete="on"></el-input>
+    </el-form-item>
+    <el-form-item label="主机数" >
+      <el-row>
+        <el-col span="10"><el-input v-model="form.hostNum" autocomplete="on" type="number"></el-input></el-col>
+        <el-col span="4">台</el-col>
+      </el-row>
+    </el-form-item>
+    <el-form-item label="使用期限" >
+      <el-row>
+        <el-col span="10"><el-input v-model="form.day" autocomplete="on" type="number"></el-input></el-col>
+        <el-col span="4">天</el-col>
+      </el-row>
     </el-form-item>
     <el-form-item label="账号" >
-      <el-input v-model="form.loginName" autocomplete="on"></el-input>
+      <el-input v-model="form.userName" autocomplete="on"></el-input>
     </el-form-item>
     <el-form-item label="密码" >
      <el-input v-model="form.pow" autocomplete="on" type="password"></el-input>
@@ -84,25 +101,32 @@
   </el-form>
   <div slot="footer" class="dialog-footer">
     <el-button @click="addPlayerShowDialog = false">取 消</el-button>
-    <el-button type="primary" @click="saveUser">确 定</el-button>
+    <el-button type="primary" @click="saveEnter">确 定</el-button>
   </div>
 </el-dialog>
 <!-- 修改企业 -->
-<el-dialog title="修改用户" :visible.sync="updateUserShowDialog">
-  <el-form :model="formUp">
-    <el-form-item label="账号">
-      {{formUp.no}}
+<el-dialog title="修改企业" :visible.sync="updateUserShowDialog" width="20%" class="enterUpdateDialog">
+  <el-form :model="formUp" label-position="left" label-width="80px">
+    <el-form-item label="默认账号">
+      <el-tag>{{formUp.userName}}</el-tag>
     </el-form-item>
-    <el-form-item label="密码" >
-     <el-input v-model="formUp.pow" autocomplete="on" type="password"></el-input>
+    <el-form-item label="主机数" >
+     <el-input v-model="formUp.hostNum" autocomplete="on" type="number"></el-input>
     </el-form-item>
-    <el-form-item label="用户id" >
-        {{formUp.userId}}
+    <el-form-item label="到期时间" >
+    <el-date-picker
+      v-model="formUp.enterTime"
+      type="date"
+      placeholder="选择日期"
+      :picker-options="pickerOptions"
+      value-format="yyyy-MM-dd"
+      >
+    </el-date-picker>
     </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
     <el-button @click="updateUserShowDialog = false">取 消</el-button>
-    <el-button type="primary" @click="updateUser">确 定</el-button>
+    <el-button type="primary" @click="updateEnter">确 定</el-button>
   </div>
 </el-dialog>
 </el-container>
@@ -111,90 +135,132 @@
 export default {
     data() {
       return {
+        enterId:"",
         pageSize:10,
         pagetotal:0,
         enterIndex: "0",
         selectName:'',
         currentPage:1,
-        showUserClick:true,
+        showEnterClick:true,
         addEnterShowDialog:false,
         updateUserShowDialog:false,
         tableData: [
           
         ],
         form:{
-          loginName:'',
+          enterName:'',
           userName:'',
+          hostNum:'5',
+          day:'3',
           pow:'',
           pow2:''
         },
         formUp:{
-          no:'',
-          pow:'',
-          userId:'',
-          id:'',
-        }
+          userName:'',
+          hostNum:'',
+          enterTime:'',
+          enterId:'',
+        },
+         pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() <=  Date.now();
+          }
+        },
       }
       
     },
     //页面加载
     created(){
+       this.thisEnterId();
        this.selectEnter();
      // this.convert();
     },
     methods: {
-      toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
+      //
+      thisEnterId(){
+         const enterId= localStorage.getItem("enterId");
+         this.enterId=enterId;
       },
-      //修改用户
-      updateUser(){
-         let formData=new FormData();
-        formData.append("id",this.formUp.id);
-        formData.append("pow",this.formUp.pow);
+      //修改企业
+      updateEnter(){
+         const userId= localStorage.getItem("userId");
+        const hostNum=this.formUp.hostNum;
+        const day=this.formUp.enterTime;
+        const enterId=this.formUp.enterId;
+        if(hostNum==""||day==""){
+           this.$message({
+                message: '请填写完整',
+                type: 'warning'
+              });
+          return;
+        }
+        let formData=new FormData();
+        formData.append("hostNum",hostNum);
+        formData.append("day",day);
+        formData.append("userId",userId);
        // alert(this.currentPage);
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/update',formData).then(res=> {
+        this.$axios.patch(this.GLOBAL.serverSrc+'/enter/enter/'+enterId,formData).then(res=> {
               if(res.data.code==0){
                 this.selectEnter(); 
               }
-              alert(res.data.msg);
               this.updateUserShowDialog=false;
            }).catch(function (error) {
         this.updateUserShowDialog=false;
              console.log(error);
            });
       },
-      userClickUpdate(val){
-        this.formUp.id=val.id
-        this.formUp.no=val.no;
-        this.formUp.userId=val.userId;
+      enterClickUpdate(val){
+        this.formUp.enterId=val.enterId
+        this.formUp.userName=val.userName;
+        this.formUp.hostNum=val.hostNum;
+        this.formUp.enterTime=val.enterTime;
         this.updateUserShowDialog=true;
       },
-      //添加用户
-      saveUser(){
-         let formData=new FormData();
-        formData.append("loginName",this.form.loginName);
-        formData.append("password",this.form.pow);
-        formData.append("userName",this.form.userName);
-        let pow1=this.form.pow;
-        let pow2=this.form.pow2;
-        if(pow1!=pow2){
-          alert("密码不一致");
+      //添加企业
+      saveEnter(){
+        const enterName=this.form.enterName;
+        const hostNum=this.form.hostNum;
+        const day=this.form.day;
+        const userName=this.form.userName;
+        const pow=this.form.pow;
+        const pow2=this.form.pow2;
+        if(enterName==""||hostNum==""||day==""||userName==""||pow==""){
+           this.$message({
+                message: '请填写完整',
+                type: 'warning'
+              });
           return;
         }
+        if(pow!=pow2){
+          this.$message({
+                message: '密码不一致',
+                type: 'warning'
+              });
+          return;
+        }
+        const userId= localStorage.getItem("userId");
+        let formData=new FormData();
+        formData.append("enterName",enterName);
+        formData.append("hostNum",hostNum);
+        formData.append("day",day);
+        formData.append("userName",userName);
+        formData.append("pow",pow);
+        formData.append("userId",userId);
        // alert(this.currentPage);
-        this.$axios.post(this.GLOBAL.serverSrc+'/users/add',formData).then(res=> {
+        this.$axios.post(this.GLOBAL.serverSrc+'/enter/admin/enter',formData).then(res=> {
               if(res.data.code==0){
                 this.selectEnter();
                 this.addEnterShowDialog=false;
-                alert(res.data.msg);
-              }else{
-              alert(res.data.msg);
+                this.$message({
+                message: '添加成功',
+                type: 'success'
+              });
+              }
+              else if(res.data.code==3){
+                this.$message({
+                message: '账号已被占用',
+                type: 'warning'
+              });
               }
            }).catch(function (error) {
 
@@ -233,9 +299,9 @@ export default {
          this.currentPage=1;
          this.enterIndex=key;
          if(keyPath==0){
-           this.showUserClick=true
+           this.showEnterClick=true
          }else{
-           this.showUserClick=false
+           this.showEnterClick=false
          }
          this.selectEnter();
         }      
@@ -286,5 +352,9 @@ export default {
 }
 .el-form button{
   margin-top: 15px;
+}
+
+.enterUpdateDialog{
+  text-align: left;
 }
 </style>

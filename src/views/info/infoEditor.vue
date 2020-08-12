@@ -284,7 +284,7 @@
         <el-row>
           <el-col :span="24">
           <el-row >
-        <el-col id="info-file-card" :span="3" v-for="file in fileData" :key="file.id" style="font-size: 14px;">
+        <el-col id="info-file-card" :span="2" v-for="file in fileData" :key="file.id" style="font-size: 14px;">
           <el-card :body-style="{ padding: '0px' }" shadow="hover" style="height:100px;width:100%"  >
             <div @click="addinfoFileUrl(file)">
             <img :src='showFileUrl+"/"+file.fileUrl' class="image"  style="height:100px;width:100%"
@@ -316,9 +316,9 @@
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <!-- <div slot="footer" class="dialog-footer">
         <el-button  @click="infoFileDialog = false">上传文件</el-button>
-      </div>
+      </div> -->
     </el-dialog>
       </el-main>
       <el-footer></el-footer>
@@ -941,6 +941,7 @@ export default {
       //文件列表分页点击
     filehandleCurrentChange(val){
         console.log(val);
+        this.selectFileList();
     },
     //文件上传监听
       handleAvatarSuccess(res, file) {
