@@ -10,6 +10,15 @@
     <div>
       <el-input size="mini" placeholder="主机名" v-model="selectName" >
     </el-input><el-button type="primary" size="mini" @click="onSubmit">查询</el-button>
+     <el-select v-model="enterId" filterable placeholder="请选择" size="mini"  @change="selectClick" >
+     <el-option
+      v-for="item in enterList"
+      :key="item.enterId"
+      :label="item.enterName"
+      :value="item.enterId"
+      >
+    </el-option>
+    </el-select>
       </div>
     </el-menu-item>  
    <!-- <el-menu-item style="float:right">
@@ -44,6 +53,11 @@
       >
     </el-table-column>
     <el-table-column
+      prop="enterName"
+      label="所属企业"
+      >
+    </el-table-column>
+    <el-table-column
       prop="hostLinkId"
       label="链接Id"
       >
@@ -69,14 +83,14 @@
       label="添加时间"
       >
     </el-table-column>
-    <el-table-column
+    <!-- <el-table-column
       fixed="right"
       label="操作"
       >
       <template slot-scope="scope">
         <el-button @click="hostClickDis(scope.row)" type="text" size="small">发布节目</el-button>
       </template>
-    </el-table-column>
+    </el-table-column> -->
   </el-table>
   <div class="block">
          <el-pagination
@@ -120,6 +134,9 @@ export default {
         currentPage:1,
         tableColumShow:false,
         selectMatchId:"",
+        //企业列表
+        enterList: [],
+        enterId:'',
         tableData: [
         ],
         form:{
@@ -134,8 +151,8 @@ export default {
     },
     //页面加载
     created(){
-       this.selectHosts();
-     // this.convert();
+      this.selectHosts();
+      this.selectEnterList();
     },
     activated() {
       console.log('我这个页面显示就会执行');
@@ -153,6 +170,20 @@ export default {
       selectClick(){
         this.selectHosts();
       },
+       //查询企业列表
+      selectEnterList(){
+       // alert(this.currentPage);
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.get(this.GLOBAL.serverSrc+'/enter/enter/list').then(res=> {
+              if(res.data.code==0){
+                let data = JSON.parse(res.data.data);
+                this.enterList=data;
+              }       
+           }).catch(function (error) {
+             console.log(error);
+           });
+      },
       //添加客户端
       saveHost(){
         let formData = new FormData();
@@ -162,8 +193,7 @@ export default {
         .post(this.GLOBAL.serverSrc+"/host/add", formData)
         .then(res => {
           // console.log(JSON.parse(res.data));//数据先转换格式
-          if (res.data.code == "0") {
-            alert(res.data.msg);  
+          if (res.data.code == "0") { 
             this.selectHosts(); 
             this.addHostShowDialog=false;    
           } else {
@@ -177,16 +207,13 @@ export default {
       },
       //查询客户端
       selectHosts(){
-         const enterId = localStorage.getItem("enterId");
         let formData=new FormData();
         formData.append("hostName",this.selectName);
         formData.append("state",this.hostsIndex);
         formData.append("linkState","");
-        formData.append("enterId",enterId);
+        formData.append("enterId",this.enterId);
         formData.append("page",this.currentPage-1);
-        console.log(formData);
-        this.$axios.post(this.GLOBAL.serverSrc+'/host/userSelect',formData).then(res=> {
-              console.log(res.data.data);//数据先转换格式
+        this.$axios.post(this.GLOBAL.serverSrc+'/host/select',formData).then(res=> {
               let data = JSON.parse(res.data.data);
             //  var data= typeof age=='string'?JSON.parse(res.data.data):res.data.data;
               this.pagetotal=data[0].size;//设置总数据大小

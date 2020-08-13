@@ -9,7 +9,9 @@ const HostsAdmin = () => import('../views/hosts/hostsAdmin.vue')
 const Files = () => import('../views/files/files.vue')
 const News = () => import('../views/news/newsCore.vue')
 const Info = () => import('../views/info/info.vue')
+const InfoAdmin = () => import('../views/info/infoAdmin.vue')
 const InfoHistory = () => import('../views/info/infoHistory.vue')
+const InfoHistoryAdmin = () => import('../views/info/infoHistoryAdmin.vue')
 const InfoEditor = () => import('../views/info/infoEditor.vue')
 const Enter = () => import('../views/enterprise/enterprise.vue')
 const EnterSignUp = () => import('../views/enterprise/enterSignUp.vue')
@@ -127,6 +129,17 @@ Vue.use(VueRouter)
       }
     },
     {
+      path:"InfoAdmin",
+      name:'InfoAdmin',
+      meta:{
+        title:"节目管理"
+      },
+      components:{
+        default:InfoAdmin,
+        'mianView':InfoAdmin
+      }
+    },
+    {
       path:"InfoHistory",
       name:'InfoHistory',
       meta:{
@@ -135,6 +148,17 @@ Vue.use(VueRouter)
       components:{
         default:InfoHistory,
         'mianView':InfoHistory
+      }
+    },
+    {
+      path:"InfoHistoryAdmin",
+      name:'InfoHistoryAdmin',
+      meta:{
+        title:"发布历史"
+      },
+      components:{
+        default:InfoHistoryAdmin,
+        'mianView':InfoHistoryAdmin
       }
     },
     {

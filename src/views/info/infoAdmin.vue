@@ -13,11 +13,20 @@
           <div>
             <el-input size="mini" placeholder="节目名" v-model="selectName"></el-input>
             <el-button type="primary" size="mini" @click="onSubmit">查询</el-button>
+              <el-select v-model="enterId" filterable placeholder="请选择" size="mini"  @change="selectClick" >
+              <el-option
+                v-for="item in enterList"
+                :key="item.enterId"
+                :label="item.enterName"
+                :value="item.enterId"
+                >
+              </el-option>
+              </el-select>
           </div>
         </el-menu-item>
-        <el-menu-item style="float:right">
+        <!-- <el-menu-item style="float:right">
           <el-button type="primary" size="small" @click="addInfoBtn()">制作节目</el-button>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-menu>
     </el-header>
     <el-main>
@@ -33,6 +42,7 @@
         >
           <el-table-column prop="id" label="id"></el-table-column>
           <el-table-column prop="name" label="名称"></el-table-column>
+           <el-table-column prop="enterName" label="企业"></el-table-column>
           <el-table-column prop="userName" label="编辑人"></el-table-column>
           <el-table-column prop="layoutType" label="布局类型">
             <template slot-scope="scope">
@@ -49,8 +59,8 @@
           <el-table-column prop="creationTime" label="添加时间"></el-table-column>
           <el-table-column fixed="right" label="操作" width="120">
             <template slot-scope="scope">
-              <el-button @click="infoReleaseClick(scope.row)" type="text" size="small" v-if="infoBtnShow">发布</el-button>
-              <el-button @click="updateInfoBtn(scope.row)" type="text" size="small">修改</el-button>
+              <!-- <el-button @click="infoReleaseClick(scope.row)" type="text" size="small">发布</el-button>
+              <el-button @click="updateInfoBtn(scope.row)" type="text" size="small">修改</el-button> -->
               <el-button @click="deleteInfoBtn(scope.row)" type="text" size="small" v-if="infoBtnShow">删除</el-button>
               <el-button @click="recoveryInfoBtn(scope.row)" type="text" size="small" v-else>恢复</el-button>
             </template>
@@ -135,12 +145,15 @@ export default {
           relTimeType: '0',
           relTimeDay: '',
           relTime: ''
-        },  
+        },
+      //按钮显示
+      infoBtnShow:true,   
+      //企业列表
+        enterList: [],
+        enterId:'',   
       hostList:[],  
       hosts:[],
       infoReleaseDialog:false,
-      //按钮显示
-      infoBtnShow:true,
       //节目分页
       pageSize: 5,
       pagetotal: 0,
@@ -154,11 +167,11 @@ export default {
   //页面加载
   created() {
     this.selectProgram();
-    this.selectHostList();
+    this.selectEnterList();
   },
   activated() {
-      this.selectProgram();
-    this.selectHostList();
+    this.selectProgram();
+    this.selectEnterList();
     },
   methods: {
     //分页选择
@@ -166,8 +179,22 @@ export default {
         console.log(val);
         this.selectProgram();
       },
+    //查询企业列表
+      selectEnterList(){
+       // alert(this.currentPage);
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.get(this.GLOBAL.serverSrc+'/enter/enter/list').then(res=> {
+              if(res.data.code==0){
+                let data = JSON.parse(res.data.data);
+                this.enterList=data;
+              }       
+           }).catch(function (error) {
+             console.log(error);
+           });
+      },  
     //查询主机列表
-    selectHostList(){
+    selectHostList(){   
       const enterId = localStorage.getItem("enterId");
       this.$axios
         .get(this.GLOBAL.serverSrc + "/host/user/hostList", {
@@ -186,7 +213,43 @@ export default {
         });
 
 
-    },  
+    }, 
+    //节目删除
+    deleteInfoBtn(val){
+        const proId=val.proId;
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.delete(this.GLOBAL.serverSrc+'/program/pro/'+proId,
+        {params:{
+          state:"1"
+        }}
+        ).then(res=> {
+          if(res.data.code=="0"){
+             this.selectProgram();
+          }
+           }).catch(function (error) {
+
+             console.log(error);
+      });
+    }, 
+    //节目恢复
+    recoveryInfoBtn(val){
+        const proId=val.proId;
+        let token=localStorage.getItem("token");
+        this.$axios.defaults.headers.common["token"] = token;
+        this.$axios.delete(this.GLOBAL.serverSrc+'/program/pro/'+proId,
+        {params:{
+          state:"0"
+        }}
+        ).then(res=> {
+          if(res.data.code=="0"){
+             this.selectProgram();
+          }
+           }).catch(function (error) {
+
+             console.log(error);
+      });
+    }, 
     //发布
     infoReleaseOk(){
       const enterId=localStorage.getItem("enterId");
@@ -244,62 +307,26 @@ export default {
       //打开新页面
       window.open(routeUrl.href, "_blank");
     },
-      //节目删除
-    deleteInfoBtn(val){
-        const proId=val.proId;
-        let token=localStorage.getItem("token");
-        this.$axios.defaults.headers.common["token"] = token;
-        this.$axios.delete(this.GLOBAL.serverSrc+'/program/pro/'+proId,
-        {params:{
-          state:"1"
-        }}
-        ).then(res=> {
-          if(res.data.code=="0"){
-             this.selectProgram();
-          }
-           }).catch(function (error) {
-
-             console.log(error);
-      });
-    }, 
-    //节目恢复
-    recoveryInfoBtn(val){
-        const proId=val.proId;
-        let token=localStorage.getItem("token");
-        this.$axios.defaults.headers.common["token"] = token;
-        this.$axios.delete(this.GLOBAL.serverSrc+'/program/pro/'+proId,
-        {params:{
-          state:"0"
-        }}
-        ).then(res=> {
-          if(res.data.code=="0"){
-             this.selectProgram();
-          }
-           }).catch(function (error) {
-
-             console.log(error);
-      });
-    }, 
     //查询按钮
     selectClick() {
       this.selectProgram();
     },
     //查询节目列表
     async selectProgram() {
-      const enterId = localStorage.getItem("enterId");
+      const enterId =this.enterId;
       const state=this.infoIndex;
       this.$axios
-        .get(this.GLOBAL.serverSrc + "/program/pro/" + enterId, {
+        .get(this.GLOBAL.serverSrc + "/program/pro/admin", {
           params: {
             page: this.currentPage - 1,
             name: this.selectName,
+            enterId:enterId,
             state:state
           },
         })
         .then((res) => {
           console.log(res); //数据先转换格式
           let data = JSON.parse(res.data.data);
-           
           //  var data= typeof age=='string'?JSON.parse(res.data.data):res.data.data;
           this.pagetotal = data[0].size; //设置总数据大小
           let redate =
@@ -313,7 +340,7 @@ export default {
           console.log(error);
         });
     },
-   //页头
+    //页头
     handleSelect(key, keyPath) {
       if (key != null) {
          this.currentPage=1;

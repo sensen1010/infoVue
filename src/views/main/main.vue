@@ -7,7 +7,7 @@
      >
      <img style="width: 100px; height: 100px;margin-top:10px;"/>
       <el-menu-item index="1" v-if="userType=='0'">
-        <i class="el-icon-user"></i>
+        <i class="el-icon-s-cooperation"></i>
         <span slot="title">企业管理</span>
       </el-menu-item>
       <el-menu-item index="2" v-if="userType!='2'" >
@@ -30,12 +30,12 @@
         <i class="el-icon-edit-outline"></i>
         <span slot="title">发布历史</span>
       </el-menu-item>
-       <el-menu-item index="9">
-        <i class="el-icon-edit-outline"></i>
+       <el-menu-item index="9" v-if="userType!='2'">
+        <i class="el-icon-refresh"></i>
         <span slot="title">软件更新</span>
       </el-menu-item>
       <el-menu-item index="10">
-        <i class="el-icon-video-camera-solid"></i>
+        <i class="el-icon-close"></i>
         <span slot="title">退出登录</span>
       </el-menu-item>
     </el-menu>
@@ -103,7 +103,7 @@
                        break;
                      case '5':
                        if(num=='0'){
-                         this.$router.push('/Main/Hosts'); 
+                         this.$router.push('/Main/HostsAdmin'); 
                        }else{
                          this.$router.push('/Main/Hosts');
                        }
@@ -112,10 +112,18 @@
                        this.$router.push('/Main/HostsAdmin');
                        break;
                        case '7':
-                       this.$router.push('/Main/Info');
+                       if(num=='0'){
+                         this.$router.push('/Main/InfoAdmin'); 
+                       }else{
+                         this.$router.push('/Main/Info');
+                       }
                        break;
                        case '8':
-                       this.$router.push('/Main/InfoHistory');
+                       if(num=='0'){
+                         this.$router.push('/Main/InfoHistoryAdmin'); 
+                       }else{
+                         this.$router.push('/Main/InfoHistory');
+                       }
                        break;
                         case '9':
                        this.$router.push('/Main/Update');
