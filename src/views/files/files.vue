@@ -67,10 +67,8 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
-        @selection-change="handleSelectionChange"
         v-if="!showType"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id"></el-table-column>
         <el-table-column prop="fileMd5" label="md5"></el-table-column>
         <el-table-column prop="fileName" label="名称"></el-table-column>
@@ -172,7 +170,7 @@ export default {
         showEnter:false,
         enterList: [],
         enterId: '',
-      pageSize: 32,
+      pageSize: 10,
       pagetotal: 0,
       fileIndex: "0",
       selectName: "",

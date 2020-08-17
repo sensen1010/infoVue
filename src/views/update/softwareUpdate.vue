@@ -1,7 +1,14 @@
 <template>
 <div class="updateDiv">
   <div class="updatefrom" v-if="!clientShow">
-    <el-row>
+  <el-row>
+  <el-col :span="10"><div class="grid-content bg-purple"><p></p></div></el-col>
+  <el-col :span="4">
+      <el-button  style="width:100%;height:200px" @click="client()">客户端更新</el-button>
+  </el-col>
+  <el-col :span="10"><div class="grid-content bg-purple"><p></p></div></el-col>
+</el-row>
+ <!-- <el-row>
   <el-col :span="7"><div class="grid-content bg-purple"><p></p></div></el-col>
   <el-col :span="4">
      <el-button  style="width:100%;height:200px">管理端更新</el-button>
@@ -13,7 +20,7 @@
       <el-button  style="width:100%;height:200px" @click="client()">客户端更新</el-button>
   </el-col>
   <el-col :span="7"><div class="grid-content bg-purple"><p></p></div></el-col>
-</el-row>
+</el-row> -->
 </div>
  <el-row v-if="clientShow" class="clientDiv">
   <el-col :span="14">
