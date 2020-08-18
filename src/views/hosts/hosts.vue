@@ -69,14 +69,14 @@
       label="添加时间"
       >
     </el-table-column>
-    <!-- <el-table-column
+    <el-table-column
       fixed="right"
       label="操作"
       >
       <template slot-scope="scope">
-        <el-button @click="hostClickDis(scope.row)" type="text" size="small">发布节目</el-button>
+        <el-button @click="deleteHost(scope.row)" type="text" size="small">删除主机</el-button>
       </template>
-    </el-table-column> -->
+    </el-table-column>
   </el-table>
   <div class="block">
          <el-pagination
@@ -134,11 +134,11 @@ export default {
     },
     //页面加载
     created(){
-       this.selectHosts();
+       //this.selectHosts();
      // this.convert();
     },
     activated() {
-      console.log('我这个页面显示就会执行');
+     this.selectHosts();
     },
     methods: {
       toggleSelection(rows) {
@@ -174,6 +174,21 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+      },
+      //删除客户端
+      deleteHost(val){
+        const hostId=val.hostId;
+        this.$axios.delete(this.GLOBAL.serverSrc+'/host/delete',
+        {params:{
+          hostId:hostId
+        }}).then(res=> {
+          if(res.data.code=="0"){
+           this.selectHosts();
+          }
+           }).catch(function (error) {
+          console.log(error);
+      });
+
       },
       //查询客户端
       selectHosts(){

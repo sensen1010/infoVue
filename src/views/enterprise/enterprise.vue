@@ -171,9 +171,13 @@ export default {
     },
     //页面加载
     created(){
-       this.thisEnterId();
-       this.selectEnter();
+      //  this.thisEnterId();
+      //  this.selectEnter();
      // this.convert();
+    },
+     activated() {
+     this.thisEnterId();
+       this.selectEnter();
     },
     methods: {
       //

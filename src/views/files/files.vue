@@ -195,10 +195,14 @@ export default {
   },
   //页面加载
   created() {
-    this.selectFile();
-    this.showEnterList();
+    // this.selectFile();
+    // this.showEnterList();
     // this.convert();
   },
+   activated() {
+     this.selectFile();
+    this.showEnterList();
+    },
   methods: {
     toggleSelection(rows) {
       if (rows) {

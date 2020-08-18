@@ -7,7 +7,6 @@ const Users = () => import('../views/users/users.vue')
 const Hosts = () => import('../views/hosts/hosts.vue')
 const HostsAdmin = () => import('../views/hosts/hostsAdmin.vue')
 const Files = () => import('../views/files/files.vue')
-const News = () => import('../views/news/newsCore.vue')
 const Info = () => import('../views/info/info.vue')
 const InfoAdmin = () => import('../views/info/infoAdmin.vue')
 const InfoHistory = () => import('../views/info/infoHistory.vue')
@@ -104,17 +103,6 @@ Vue.use(VueRouter)
       components:{
         default:Files,
         'mianView':Files
-      }
-    },
-    {
-      path:"News",
-      name:'News',
-      meta:{
-        title:"发布管理"
-      },
-      components:{
-        default:News,
-        'mianView':News
       }
     },
     {

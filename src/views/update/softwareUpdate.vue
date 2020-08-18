@@ -120,11 +120,12 @@ export default {
         }
     },
     activated() {
-      this.selectUpdate();
+     
     },
     methods:{
       client(){
         this.clientShow=true;
+         this.selectUpdate();
       },
        submitUpload() {
          const fileList=this.fileList;

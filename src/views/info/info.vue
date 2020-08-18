@@ -153,8 +153,8 @@ export default {
   },
   //页面加载
   created() {
-    this.selectProgram();
-    this.selectHostList();
+    //this.selectProgram();
+    //this.selectHostList();
   },
   activated() {
       this.selectProgram();

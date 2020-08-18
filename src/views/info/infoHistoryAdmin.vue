@@ -129,7 +129,7 @@ export default {
   },
   //页面加载
   created() {
-    this.selectProgramHis();
+    //this.selectProgramHis();
   },
    activated() {
      this.selectProgramHis();

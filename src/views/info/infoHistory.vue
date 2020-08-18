@@ -165,8 +165,8 @@ export default {
   },
   //页面加载
   created() {
-    this.selectProgramHis();
-    this.selectHostList();
+   // this.selectProgramHis();
+   // this.selectHostList();
   },
    activated() {
      this.selectProgramHis();

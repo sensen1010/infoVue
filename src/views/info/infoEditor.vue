@@ -164,7 +164,7 @@
                       </div>
                       <div>
                         <ul>
-                          <li><el-button style="background:#031634" @click="updateBargColor('')"  circle></el-button></li>
+                          <li><el-button style="background:#ffffff" @click="updateBargColor('#ffffff')"  circle></el-button></li>
                           <li><el-button style="background:#031634" @click="updateBargColor('#031634')" circle></el-button></li>
                           <li><el-button style="background:#CDB380" @click="updateBargColor('#CDB380')"  circle></el-button></li>
                           <li><el-button style="background:#84AF9B" @click="updateBargColor('#84AF9B')"  circle></el-button></li>

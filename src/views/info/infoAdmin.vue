@@ -166,8 +166,8 @@ export default {
   },
   //页面加载
   created() {
-    this.selectProgram();
-    this.selectEnterList();
+   // this.selectProgram();
+   // this.selectEnterList();
   },
   activated() {
     this.selectProgram();
