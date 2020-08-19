@@ -227,7 +227,7 @@
                         </ul>
                       </div>
                       <div v-if="textToolTime">
-                      <div class="title">是否启动滚动</div>
+                      <div class="title">走马灯</div>
                       <div>
                       <el-radio-group v-model="editorText.marqueeType" @change="editorTextMarquee">
                       <div>
@@ -279,7 +279,10 @@
           </el-col>
         </el-row>
   <!-- 文件选择 -->
-    <el-dialog custom-class="infoFileDialog" title="选择文件" :visible.sync="infoFileDialog" width="60%" >
+    <el-dialog custom-class="infoFileDialog" title="选择文件" 
+    :visible.sync="infoFileDialog"
+    :before-close="infoFileClose"
+     width="60%" >
       <el-form>
         <el-row>
           <el-col :span="24">
@@ -584,7 +587,6 @@ export default {
           type: 'warning'
         });
         }
-        
     },
     //格式化时间
      formatDate(inputTime) {
@@ -713,6 +715,14 @@ export default {
         }
         this.showToolType(this.activateData.type);
       },
+     //点击取消选择文件
+     infoFileClose(done){
+        const showType=this.infoActionType;
+        if(showType!="bj"){
+         this.deleteTool();
+        }
+        done();
+     },      
     //获得唯一标识符
     generateUUID() {
     let d = new Date().getTime();

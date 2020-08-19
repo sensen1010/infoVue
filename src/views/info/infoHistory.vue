@@ -60,7 +60,7 @@
           <el-table-column prop="contentHtml" label="布局文件">
             <template slot-scope="scope">
               <div v-if="scope.row.layoutType=='1'" style="transform:scale(0.2);height:160px;transform-origin: 0 0;" v-html="scope.row.contentHtml"></div>
-              <div v-else style="transform:scale(0.2);height:100px;width:1000px;transform-origin: 0 0;" v-html="scope.row.contentHtml"></div>
+              <div v-else style="transform:scale(0.2);height:120px;width:1000px;transform-origin: 0 0;" v-html="scope.row.contentHtml"></div>
             </template>
           </el-table-column>
           <el-table-column prop="creationTime" label="发布时间"></el-table-column>
