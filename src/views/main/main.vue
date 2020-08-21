@@ -78,6 +78,25 @@
             this.$router.push('/Login');
          }
       },
+      activated(){
+        //  const num= localStorage.getItem("userNum");
+        //  this.userType=num;
+        //  if(num=="0"){
+        //     this.active="1";
+        //     this.$router.push('/Main/Enter');
+        //  }
+        //  else if(num=="1"){
+        //    this.active="2";
+        //     this.$router.push('/Main/Users');
+        //  }
+        //  else if(num=="2"){
+        //     this.active="3";
+        //     this.$router.push('/Main/Files');
+        //  }
+        //  else{
+        //     this.$router.push('/Login');
+        //  }
+      },
       methods: {
            handleOpen(key, keyPath) {
              console.log(key, keyPath);
@@ -129,7 +148,11 @@
                        this.$router.push('/Main/Update');
                        break;
                         case '10':
-                       this.$router.push('/login');
+                        localStorage.setItem("token","");  
+                        localStorage.setItem("userNum","");  
+                        localStorage.setItem("userId",""); 
+                        localStorage.setItem("enterId","");
+                        this.$router.push('/login');
                        break;
                    }
                  }

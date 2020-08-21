@@ -182,7 +182,8 @@ const router = new VueRouter({
   // base: "dist",
   routes
 })
-const whiteList = ['/login','/EnterSignUp']
+const whiteList = ['/EnterSignUp']
+const loginList=['/login','/EnterSignUp']
 router.beforeEach((to,from,next) => {
   //设置标题
  // document.title=to.matched[0].meta.title;无效
@@ -191,7 +192,26 @@ router.beforeEach((to,from,next) => {
   if (token!==null&&token!="") {
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
       next()
-    }else{
+    }
+    else if(loginList.indexOf(to.path)!==-1){
+      axios.defaults.headers.common["token"] = token;
+      axios
+      .post(global_.serverSrc+"/token/token")
+      .then(res => {
+         console.log(res);//数据先转换格式
+        if (res.data.code == "0") { 
+        next('/Main')
+        } 
+        else {
+        next('/login')
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+      next()
+    }
+    else{
       axios.defaults.headers.common["token"] = token;
       axios
       .post(global_.serverSrc+"/token/token")
@@ -210,7 +230,7 @@ router.beforeEach((to,from,next) => {
       next()
     }
   } else {
-    if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
+    if (loginList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
       next()
     } else {
       next('/login') //否则全部重定向到登录页
