@@ -116,7 +116,7 @@ export default {
         onLogin(){ 
        let formData = new FormData();
       formData.append("userName", this.form.no);
-      formData.append("password", this.form.pow);
+      formData.append("pow", this.form.pow);
       this.$axios
         .post(this.GLOBAL.serverSrc+"/users/login", formData)
         .then(res => {
