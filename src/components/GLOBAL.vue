@@ -1,7 +1,7 @@
 
 <script>
- // const path=window.location.hostname;
-  const path="182.92.220.213"
+   const path=window.location.hostname;
+  //const path="182.92.220.213"
   const pathName="/info";
   const serverSrc='http://'+path+':8080'+pathName;
   const serverimg='http://'+path+':8080/file/';

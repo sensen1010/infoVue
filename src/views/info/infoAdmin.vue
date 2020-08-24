@@ -211,8 +211,6 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
-
-
     }, 
     //节目删除
     deleteInfoBtn(val){

@@ -276,7 +276,7 @@ export default {
       saveUser(){
          let formData=new FormData();
         formData.append("name",this.form.name);
-        formData.append("password",this.form.pow);
+        formData.append("pow",this.form.pow);
         formData.append("userName",this.form.userName);
         const num= localStorage.getItem("userNum");
         let enterId="";

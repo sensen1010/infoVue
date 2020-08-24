@@ -30,7 +30,7 @@
         <i class="el-icon-edit-outline"></i>
         <span slot="title">发布历史</span>
       </el-menu-item>
-       <el-menu-item index="9" v-if="userType!='2'">
+       <el-menu-item index="9" v-if="false">
         <i class="el-icon-refresh"></i>
         <span slot="title">软件更新</span>
       </el-menu-item>
