@@ -280,10 +280,11 @@ export default {
         formData.append("userName",this.form.userName);
         const num= localStorage.getItem("userNum");
         let enterId="";
-        if(num=="1"){
+        var _this=this;
+       if(num=="1"){
         enterId=localStorage.getItem("enterId");
         }else if(num=="0"){
-        enterId=this.form.addenterId;
+        enterId=_this.form.addEnterId;
         }
         formData.append("enterId",enterId);
         let pow1=this.form.pow;
@@ -359,7 +360,7 @@ export default {
       },
       //恢复
       userClickOk(val){
-        const enterId=localStorage.getItem("enterId");
+        const enterId=val.enterId;
         const userId=val.userId;
         let token=localStorage.getItem("token");
         this.$axios.defaults.headers.common["token"] = token;
@@ -380,7 +381,7 @@ export default {
       },
       //拉黑
       userClickNo(val){
-        const enterId=localStorage.getItem("enterId");
+        const enterId=val.enterId;
         const userId=val.userId;
         let token=localStorage.getItem("token");
         this.$axios.defaults.headers.common["token"] = token;

@@ -19,7 +19,7 @@
   </el-form-item>
   <el-form-item label-width="0">
     <el-button type="primary" @click="onLogin" style="width:100%">登录</el-button>
-    <p  class="textLink"><el-link type="primary" @click="registrationDiaLog">企业激活</el-link></p>
+    <!-- <p  class="textLink"><el-link type="primary" @click="registrationDiaLog">企业激活</el-link></p> -->
   </el-form-item>
 </el-form>
 </el-card>
